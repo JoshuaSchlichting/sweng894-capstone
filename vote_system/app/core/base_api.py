@@ -1,6 +1,5 @@
 from abc import ABC
 
-from tests.unit.test_admin_api import data_access_layer
 from core.abstract_data_access_layer import AbstractDataAccessLayer
 
 
