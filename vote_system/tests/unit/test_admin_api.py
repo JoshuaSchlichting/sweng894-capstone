@@ -33,7 +33,7 @@ def test_create_user(data_access_layer):
     admin = api_factory.create_admin_api()
 
     # act
-    new_user_id = admin.create_user()
+    new_user_id = admin.create_user('Test User')
 
     # assert
     assert new_user_id == MOCK_NEW_USER_ID
