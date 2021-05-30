@@ -12,8 +12,13 @@ class User:
 
 
 @dataclass
-class Candidate:
+class Candidate(User):
     party: str
+
+
+@dataclass
+class Voter(User):
+    pass
 
 
 @dataclass
