@@ -1,4 +1,12 @@
 {
     "python.pythonPath": "/Users/josh/Documents/education/sweng894/sweng894-capstone/vote_system/.venv/bin/python3.9",
-    "python.analysis.extraPaths": ["./vote_system/app"]
+    "python.analysis.extraPaths": [
+        "./vote_system/app"
+    ],
+    "python.testing.pytestArgs": [
+        "vote_system"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
 }
