@@ -5,16 +5,16 @@ from typing import List
 class AbstractDataAccessLayer(ABC):
 
     @abstractmethod
-    def create_user(user_name: str) -> int:
+    def create_user(username: str) -> int:
         """Creates new user
         Args:
-            user_name: name of user to create
+            username: name of user to create
         Return:
             id of created user
         """
 
     @abstractmethod 
-    def cast_vote(user_id: int, election_id: int, ranked_candidates: List[int]) -> int:
+    def cast_vote(user_id: int, election_id: int, ranked_candidate_list: List[int]) -> int:
         """Creates a new vote in the database
 
         Args:
@@ -27,10 +27,10 @@ class AbstractDataAccessLayer(ABC):
         """
     
     @abstractmethod
-    def create_candidate(user_name: str) -> int:
+    def create_candidate(username: str) -> int:
         """Creates a candidate in the system
 
-        If a user with the same user_name already exists, then the existing user_id is returned.
+        If a user with the same username already exists, then the existing user_id is returned.
 
         Return:
             id of the candidate user
