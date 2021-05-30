@@ -1,6 +1,6 @@
 from .abstract_data_access_layer import AbstractDataAccessLayer
 from .voter_api import VoterApi
-from .models import UserApi
+from .user_api import UserApi
 from .admin_api import AdminApi
 
 
