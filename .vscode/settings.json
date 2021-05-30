@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "/Users/josh/Documents/education/sweng894/sweng894-capstone/venv/bin/python3.9",
+    "python.analysis.extraPaths": ["./vote_system/app"]
+}
