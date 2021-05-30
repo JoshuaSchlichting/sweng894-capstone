@@ -1,6 +1,6 @@
 from typing import List
 
-from core.base_api import BaseApi
+from .base_api import BaseApi
 
 
 class VoterApi(BaseApi):

@@ -1,4 +1,4 @@
-from core.abstract_data_access_layer import AbstractDataAccessLayer
+from .abstract_data_access_layer import AbstractDataAccessLayer
 
 
 class ElectionFactory:

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from core.user import User
+from .models import User
 
 
 class Candidate(User):

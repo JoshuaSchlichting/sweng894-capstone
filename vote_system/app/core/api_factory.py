@@ -1,7 +1,7 @@
-from core.abstract_data_access_layer import AbstractDataAccessLayer
-from core.voter_api import VoterApi
-from core.user_api import UserApi
-from core.admin_api import AdminApi
+from .abstract_data_access_layer import AbstractDataAccessLayer
+from .voter_api import VoterApi
+from .models import UserApi
+from .admin_api import AdminApi
 
 
 class ApiFactory:

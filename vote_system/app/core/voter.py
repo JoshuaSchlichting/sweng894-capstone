@@ -1,4 +1,4 @@
-from core.user import User
+from .models import User
 
 
 class Voter(User):
