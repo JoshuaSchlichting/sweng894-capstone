@@ -22,6 +22,10 @@ class Voter(User):
 
 
 @dataclass
+class Candidate(User):
+    party: str
+
+@dataclass
 class Election:
     id: int
     candidates: Set[int]
