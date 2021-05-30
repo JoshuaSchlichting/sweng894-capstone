@@ -17,3 +17,4 @@ class BaseApi(ABC):
             None
         """
         self._dal = data_access_layer
+        self._token = token
