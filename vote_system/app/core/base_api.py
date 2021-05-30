@@ -1,9 +1,12 @@
 from abc import ABC
 
+from tests.unit.test_admin_api import data_access_layer
+from core.abstract_data_access_layer import AbstractDataAccessLayer
 
-class AbstractApi(ABC):
 
-    def __init__(self, token: dict) -> None:
+class BaseApi(ABC):
+
+    def __init__(self, token: dict, data_access_layer: AbstractDataAccessLayer) -> None:
         """
         The Api's constructor should be used to determine that a user is a valid admin.
 
@@ -14,3 +17,4 @@ class AbstractApi(ABC):
         Return:
             None
         """
+        self._dal = data_access_layer
