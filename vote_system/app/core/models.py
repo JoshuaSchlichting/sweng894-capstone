@@ -12,9 +12,16 @@ class User:
 
 
 @dataclass
+class Candidate:
+    party: str
+
+
+@dataclass
 class Election:
     id: int
     candidates: Set[int]
+    start_ts: datetime
+    end_ts: datetime
 
 
 @dataclass
