@@ -1,0 +1,98 @@
+@startuml
+' skinparam linetype polyline
+' skinparam linetype ortho
+namespace core{
+    class User{
+        id: int
+        name: str
+        phone_number: str
+        email_address: str
+    }
+
+    class Voter {
+    }
+    class Candidate{
+        +party: str
+    }
+
+
+    Voter -up-|> User
+    Candidate -up-|> User
+
+    class Election{
+        +id: int
+        +candidates: set
+    }
+
+
+    class Vote{
+        +id: int
+        +cast_by: int
+        +ranked_candidates: tuple
+        +timestamp: datetime
+    }
+
+
+    class UserApi{
+        +__init__(token: dict)
+        +retrieve_election_report(election_id: int)
+        +log_in(username: str, password: str)
+    }
+    UserApi --> User : << uses >>
+    UserApi --> AbstractDataAccessLayer : << uses >>
+    UserApi --> ElectionSystem : <<uses>>
+
+    class VoterApi{
+        +cast_vote(user_id: int, ranked_candidates: list, election_id: int)
+    }
+    VoterApi --> AbstractDataAccessLayer : << uses >>
+    VoterApi --> Vote : <<creates>>
+
+    abstract class AbstractDataAccessLayer{
+        +{abstract}vote(user_id: int, ranked_dandidates: list, election_id: int)
+    }
+
+    class ElectionSystem{
+        +get_election_report(election_id: int): dict
+        +end_election(election_id: int)
+    }
+    AdminApi --> ElectionSystem : <<uses>>
+
+    enum UserAccessLevel{
+        +Admin
+        +Normal
+    }
+    abstract class AbstractAuthLayer{
+        +{abstract}log_in(username: str, password: str): int
+        +{abstract}get_token_is_valid(token: dict): bool
+        +{abstract}get_token_level(token: dict): int
+    }
+    AbstractAuthLayer --> UserAccessLevel
+
+    AdminApi --> AbstractAuthLayer
+    UserApi --> AbstractAuthLayer
+    VoterApi --> AbstractAuthLayer
+
+    class AdminApi{
+        +__init__(token: dict)
+        +create_user(usename: str)
+        +create_candidate(username: str)
+        +create_election(election_name: str, candidates: List[str])
+        +declare_winner(election_id: int)
+    }
+    AdminApi --> Election : <<creates>>
+    AdminApi --> AbstractDataAccessLayer : << uses >>
+    AdminApi --> User : << creates >>
+    AdminApi --> Candidate : << creates >>
+    AdminApi --> Vote : << creates >>
+}
+
+namespace presentation_layer{
+
+}
+
+presentation_layer -> core.UserApi : <<calls>>
+presentation_layer -> core.AdminApi : <<calls>>
+presentation_layer -> core.VoterApi : <<calls>>
+
+@enduml
