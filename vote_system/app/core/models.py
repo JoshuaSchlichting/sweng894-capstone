@@ -25,6 +25,7 @@ class Voter(User):
 class Candidate(User):
     party: str
 
+
 @dataclass
 class Election:
     id: int
