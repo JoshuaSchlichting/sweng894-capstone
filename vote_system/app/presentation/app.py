@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from functools import wraps
 
 from flask import Flask, request, jsonify, make_response
 from loguru import logger
@@ -15,20 +14,8 @@ SECRET_KEY = "change this for production"
 app.config["SECRET_KEY"] = SECRET_KEY
 
 
-def _get_data_access_layer() -> AbstractDataAccessLayer:
-    logger.warning("Using mocked up data access layer - you are OFFLINE!!!")
-    from unittest.mock import Mock
-
-    return Mock(spec=AbstractDataAccessLayer)
-
-
-def _get_api_factory(token: dict):
-    dal = _get_data_access_layer()
-    return ApiFactory(token=token, data_access_layer=dal, logger=logger)
-
-
 def token_required(f):
-    """decorator for verifying the JWT"""
+    """Decorator for verifying the JWT"""
 
     def func(*args, **kwargs):
         token = None
@@ -47,6 +34,22 @@ def token_required(f):
         return f(token_dict, *args, **kwargs)
 
     return func
+
+
+def _get_data_access_layer() -> AbstractDataAccessLayer:
+    logger.warning("Using mocked up data access layer - you are OFFLINE!!!")
+    from unittest.mock import Mock
+
+    dal = Mock(spec=AbstractDataAccessLayer)
+    dal.create_user.return_value = 3456
+    dal.cast_vote.return_value = 1234
+    dal.create_candidate.return_value = 83445
+    return dal
+
+
+def _get_api_factory(token: dict):
+    dal = _get_data_access_layer()
+    return ApiFactory(token=token, data_access_layer=dal, logger=logger)
 
 
 # route for loging user in
@@ -122,6 +125,7 @@ def signup():
         return make_response("User already exists. Please Log in.", 202)
 
 
+@token_required
 @app.route("/user", methods=["POST"])
 def create_user(token):
 
@@ -130,6 +134,7 @@ def create_user(token):
     return jsonify({"userId": newly_create_user_id})
 
 
+@token_required
 @app.route("/election", methods=["POST"])
 def create_election(token):
 
@@ -140,6 +145,7 @@ def create_election(token):
     return jsonify({"userId": newly_create_user_id})
 
 
+@token_required
 @app.route("/user", methods=["POST"])
 def create_user():
 
