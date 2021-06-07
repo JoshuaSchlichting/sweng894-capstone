@@ -2,11 +2,10 @@ from .base_api import BaseApi
 
 
 class AdminApi(BaseApi):
-
     def create_user(self, username: str) -> int:
         """Create new user and return new user's ID"""
         return self._dal.create_user(username=username)
-    
+
     def create_candidate(self, username: str) -> int:
         """Adds candidate flag to username
 

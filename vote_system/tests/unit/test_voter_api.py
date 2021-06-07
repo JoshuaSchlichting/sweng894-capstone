@@ -19,11 +19,7 @@ def api(mocker):
     dal = mocker.Mock(spec=AbstractDataAccessLayer)
     dal.cast_vote.return_value = MOCK_NEW_VOTE_ID
 
-    api_factory = ApiFactory(
-        token={},
-        data_access_layer=dal,
-        logger=logger
-    )
+    api_factory = ApiFactory(token={}, data_access_layer=dal, logger=logger)
     return api_factory.create_voter_api()
 
 
@@ -32,7 +28,7 @@ def test_cast_vote(api):
     newly_created_vote_id = api.cast_vote(
         user_id=MOCK_USER_ID,
         election_id=MOCK_ELECTION_ID,
-        ranked_candidate_list=[4, 6, 3, 1, 6, 7, 8, 12, 11]
+        ranked_candidate_list=[4, 6, 3, 1, 6, 7, 8, 12, 11],
     )
 
     # assert

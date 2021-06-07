@@ -3,7 +3,6 @@ from typing import List
 
 
 class AbstractDataAccessLayer(ABC):
-
     @abstractmethod
     def create_user(username: str) -> int:
         """Creates new user
@@ -13,8 +12,10 @@ class AbstractDataAccessLayer(ABC):
             id of created user
         """
 
-    @abstractmethod 
-    def cast_vote(user_id: int, election_id: int, ranked_candidate_list: List[int]) -> int:
+    @abstractmethod
+    def cast_vote(
+        user_id: int, election_id: int, ranked_candidate_list: List[int]
+    ) -> int:
         """Creates a new vote in the database
 
         Args:
@@ -25,7 +26,7 @@ class AbstractDataAccessLayer(ABC):
         Return:
             id of the vote that was created
         """
-    
+
     @abstractmethod
     def create_candidate(username: str) -> int:
         """Creates a candidate in the system
@@ -35,7 +36,7 @@ class AbstractDataAccessLayer(ABC):
         Return:
             id of the candidate user
         """
-    
+
     @abstractmethod
     def create_election(election_name: str) -> int:
         """Creates a new election in the system.
