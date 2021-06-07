@@ -11,6 +11,7 @@ loguru = "^0.5.3"
 PyJWT = "^2.1.0"
 black = "^21.5b2"
 flake8 = "^3.9.2"
+Flask-JWT-Extended = "^4.2.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"

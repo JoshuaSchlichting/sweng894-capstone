@@ -101,6 +101,22 @@ async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "flask-jwt-extended"
+version = "4.2.1"
+description = "Extended JWT integration with Flask"
+category = "main"
+optional = false
+python-versions = ">=3.6,<4"
+
+[package.dependencies]
+Flask = ">=1.0,<3.0"
+PyJWT = ">=2.0,<3.0"
+Werkzeug = ">=0.14"
+
+[package.extras]
+asymmetric_crypto = ["cryptography (>=3.0,<4.0)"]
+
+[[package]]
 name = "iniconfig"
 version = "1.1.1"
 description = "iniconfig: brain-dead simple config-ini parsing"
@@ -321,7 +337,7 @@ dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "082c3607a43c8f5c6ee4159f3a2c3d070cbc51683a7b21b25d16c1f1977a4bc6"
+content-hash = "158302ac10b9989e9c08368d369c84f37f7ac4cc4daf947566987d70122604ae"
 
 [metadata.files]
 appdirs = [
@@ -355,6 +371,10 @@ flake8 = [
 flask = [
     {file = "Flask-2.0.1-py3-none-any.whl", hash = "sha256:a6209ca15eb63fc9385f38e452704113d679511d9574d09b2cf9183ae7d20dc9"},
     {file = "Flask-2.0.1.tar.gz", hash = "sha256:1c4c257b1892aec1398784c63791cbaa43062f1f7aeb555c4da961b20ee68f55"},
+]
+flask-jwt-extended = [
+    {file = "Flask-JWT-Extended-4.2.1.tar.gz", hash = "sha256:76461f2dbdf502261c69ddecd858eaf4164fbcfbf05aa456f3927fc2ab0315de"},
+    {file = "Flask_JWT_Extended-4.2.1-py2.py3-none-any.whl", hash = "sha256:6a9d7a45d4c4b4c6277aee40f07cdf5fe307c29d404700a2ba8ebf520b30abee"},
 ]
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
