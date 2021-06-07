@@ -45,6 +45,7 @@ def login():
     access_token = create_access_token(identity=username)
     return jsonify(access_token=access_token)
 
+
 # signup route
 @app.route("/signup", methods=["POST"])
 def signup():
@@ -104,6 +105,7 @@ def create_vote(token):
     ).create_admin_api()
     newly_create_user_id = admin_api.create_user(username=request.values["username"])
     return jsonify({"userId": newly_create_user_id})
+
 
 @app.route("/candidate", methods=["POST"])
 @jwt_required()
