@@ -38,6 +38,8 @@ def _get_api_factory(token: dict):
 @app.route("/")
 def index():
     return "SUCCESS"
+
+
 @app.route("/login", methods=["POST"])
 def login():
     username = request.json.get("username", None)
@@ -81,10 +83,9 @@ def signup():
 
 @app.route("/user", methods=["POST"])
 @jwt_required()
-def create_user(token):
-
-    admin_api = _get_api_factory(token).create_admin_api()
-    newly_create_user_id = admin_api.create_user(username=request.values["username"])
+def create_user():
+    admin_api = _get_api_factory(None).create_admin_api()
+    newly_create_user_id = admin_api.create_user(username=request.json["username"])
     return jsonify({"userId": newly_create_user_id})
 
 
