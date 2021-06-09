@@ -35,6 +35,9 @@ def _get_api_factory(token: dict):
     return ApiFactory(token=token, data_access_layer=dal, logger=logger)
 
 
+@app.route("/")
+def index():
+    return "SUCCESS"
 @app.route("/login", methods=["POST"])
 def login():
     username = request.json.get("username", None)
