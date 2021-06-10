@@ -1,12 +1,6 @@
-from base64 import b64encode
-
 import pytest
-from flask_jwt_extended import create_access_token
 
 from presentation.app import app
-
-
-credentials = b64encode(b"test_user:test_password").decode("utf-8")
 
 
 def get_admin_headers(token):
@@ -14,9 +8,6 @@ def get_admin_headers(token):
         "x-access-token": {"userType": "admin"},
         "Authorization": f"Bearer {token}",
     }
-
-
-VOTER_HEADERS = {"x-access-token": {"userType": "voter"}}
 
 
 @pytest.fixture
@@ -41,13 +32,6 @@ def test_index_loads(client):
 def test_create_user(client, token):
     response = client.post(
         "/user", headers=get_admin_headers(token), json={"username": "newuser"}
-    )
-    assert response.status_code == 200
-
-
-def test_create_vote(client):
-    response = client.post(
-        "vote", headers=VOTER_HEADERS, json={"vote": [3, 4, 5, 1, 5]}
     )
     assert response.status_code == 200
 
