@@ -3,23 +3,11 @@ import pytest
 from presentation.app import app
 
 
-
-
 def get_admin_headers(token):
     return {
         "x-access-token": {"userType": "admin"},
         "Authorization": f"Bearer {token}",
     }
-
-
-def get_voter_headers(token):
-    return {
-        "x-access-token": {"userType": "voter"},
-        "Authorization": f"Bearer {token}",
-    }
-
-
-VOTER_HEADERS = {"x-access-token": {"userType": "voter"}}
 
 
 @pytest.fixture
@@ -44,13 +32,6 @@ def test_index_loads(client):
 def test_create_user(client, token):
     response = client.post(
         "/user", headers=get_admin_headers(token), json={"username": "newuser"}
-    )
-    assert response.status_code == 200
-
-
-def test_create_vote(client):
-    response = client.post(
-        "vote", headers=get_voter_headers(token), json={"vote": [3, 4, 5, 1, 5]}
     )
     assert response.status_code == 200
 
