@@ -12,6 +12,13 @@ def get_admin_headers(token):
     }
 
 
+def get_voter_headers(token):
+    return {
+        "x-access-token": {"userType": "voter"},
+        "Authorization": f"Bearer {token}",
+    }
+
+
 VOTER_HEADERS = {"x-access-token": {"userType": "voter"}}
 
 
@@ -43,7 +50,7 @@ def test_create_user(client, token):
 
 def test_create_vote(client):
     response = client.post(
-        "vote", headers=VOTER_HEADERS, json={"vote": [3, 4, 5, 1, 5]}
+        "vote", headers=get_voter_headers(token), json={"vote": [3, 4, 5, 1, 5]}
     )
     assert response.status_code == 200
 
