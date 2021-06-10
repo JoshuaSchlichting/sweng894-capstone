@@ -1,12 +1,8 @@
-from base64 import b64encode
-
 import pytest
-from flask_jwt_extended import create_access_token
 
 from presentation.app import app
 
 
-credentials = b64encode(b"test_user:test_password").decode("utf-8")
 
 
 def get_admin_headers(token):
