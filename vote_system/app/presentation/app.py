@@ -116,8 +116,6 @@ def create_vote():
 @jwt_required()
 def create_candidate():
 
-    admin_api = ApiFactory(
-        token=None, data_access_layer=None, logger=logger
-    ).create_admin_api()
-    newly_create_user_id = admin_api.create_user(username=request.values["username"])
+    admin_api = _get_api_factory(None).create_admin_api()
+    newly_create_user_id = admin_api.create_user(username=request.json["username"])
     return jsonify({"userId": newly_create_user_id})
