@@ -27,6 +27,7 @@ def _get_data_access_layer() -> AbstractDataAccessLayer:
     dal.create_user.return_value = 3456
     dal.cast_vote.return_value = 1234
     dal.create_candidate.return_value = 83445
+    dal.create_election.return_value = 972
     return dal
 
 
