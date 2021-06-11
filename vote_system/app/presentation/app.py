@@ -92,13 +92,11 @@ def create_user():
 
 @app.route("/election", methods=["POST"])
 @jwt_required()
-def create_election(token):
+def create_election():
 
-    admin_api = ApiFactory(
-        token=None, data_access_layer=None, logger=logger
-    ).create_admin_api()
-    newly_create_user_id = admin_api.create_user(username=request.values["username"])
-    return jsonify({"userId": newly_create_user_id})
+    admin_api = _get_api_factory(None).create_admin_api()
+    election_id = admin_api.create_election(election_name=request.json["electionName"])
+    return jsonify({"electionId": election_id})
 
 
 @app.route("/vote", methods=["POST"])
