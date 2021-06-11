@@ -36,9 +36,9 @@ def test_create_user(client, token):
     assert response.status_code == 200
 
 
-def test_create_candidate(client):
+def test_create_candidate(client, token):
     response = client.post(
-        "candidate", headers=ADMIN_HEADERS, json={"username", "random candidate"}
+        "/candidate", headers=get_admin_headers(token), json={"username": "random candidate"}
     )
     assert response.status_code == 200
 
