@@ -41,6 +41,9 @@ def index():
     return "SUCCESS"
 
 
+@app.route("/login", methods=["GET"])
+def get_login_page():
+    return render_template("login.html")
 @app.route("/login", methods=["POST"])
 def login():
     username = request.json.get("username", None)
