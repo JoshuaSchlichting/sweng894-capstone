@@ -44,6 +44,8 @@ def index():
 @app.route("/login", methods=["GET"])
 def get_login_page():
     return render_template("login.html")
+
+
 @app.route("/login", methods=["POST"])
 def login():
     username = request.json.get("username", None)
@@ -120,7 +122,6 @@ def create_vote():
 @app.route("/candidate", methods=["POST"])
 @jwt_required()
 def create_candidate():
-
     admin_api = ApiFactory(
         token=None, data_access_layer=None, logger=logger
     ).create_admin_api()
