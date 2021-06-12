@@ -1,6 +1,7 @@
+import os
 from datetime import datetime, timedelta
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, render_template, send_from_directory
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -12,7 +13,7 @@ from core import ApiFactory
 from core import AbstractDataAccessLayer
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 SECRET_KEY = "change this for production"
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
@@ -122,3 +123,17 @@ def create_candidate():
     ).create_admin_api()
     newly_create_user_id = admin_api.create_user(username=request.values["username"])
     return jsonify({"userId": newly_create_user_id})
+
+
+@app.route("/static/js/<path:path>")
+def serve_static_js(path):
+    """Serve static files"""
+    THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
+    return send_from_directory(os.path.join(THIS_MODULE_DIR, 'static', 'js'), path)
+
+
+@app.route("/static/css/<path:path>")
+def serve_static_css(path):
+    """Serve static files"""
+    THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
+    return send_from_directory(os.path.join(THIS_MODULE_DIR, 'static', 'css'), path)
