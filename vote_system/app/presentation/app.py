@@ -1,6 +1,7 @@
+import os
 from datetime import datetime, timedelta
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, render_template, send_from_directory
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -12,7 +13,7 @@ from core import ApiFactory
 from core import AbstractDataAccessLayer
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 SECRET_KEY = "change this for production"
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
@@ -39,6 +40,11 @@ def _get_api_factory(token: dict):
 @app.route("/")
 def index():
     return "SUCCESS"
+
+
+@app.route("/login", methods=["GET"])
+def get_login_page():
+    return render_template("login.html")
 
 
 @app.route("/login", methods=["POST"])
@@ -93,7 +99,6 @@ def create_user():
 @app.route("/election", methods=["POST"])
 @jwt_required()
 def create_election():
-
     admin_api = _get_api_factory(None).create_admin_api()
     election_id = admin_api.create_election(election_name=request.json["electionName"])
     return jsonify({"electionId": election_id})
@@ -102,7 +107,6 @@ def create_election():
 @app.route("/vote", methods=["POST"])
 @jwt_required()
 def create_vote():
-
     voter_api = _get_api_factory(None).create_voter_api()
     newly_create_user_id = voter_api.cast_vote(
         user_id=request.json["userId"],
@@ -115,7 +119,20 @@ def create_vote():
 @app.route("/candidate", methods=["POST"])
 @jwt_required()
 def create_candidate():
-
     admin_api = _get_api_factory(None).create_admin_api()
     newly_create_user_id = admin_api.create_user(username=request.json["username"])
     return jsonify({"userId": newly_create_user_id})
+
+
+@app.route("/static/js/<path:path>")
+def serve_static_js(path):
+    """Serve static files"""
+    THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
+    return send_from_directory(os.path.join(THIS_MODULE_DIR, 'static', 'js'), path)
+
+
+@app.route("/static/css/<path:path>")
+def serve_static_css(path):
+    """Serve static files"""
+    THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
+    return send_from_directory(os.path.join(THIS_MODULE_DIR, 'static', 'css'), path)
