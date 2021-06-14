@@ -1,3 +1,5 @@
+import json
+from logging import log
 import os
 from datetime import datetime, timedelta
 
@@ -13,7 +15,7 @@ from core import ApiFactory
 from core import AbstractDataAccessLayer
 
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path="/static")
 SECRET_KEY = "change this for production"
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
@@ -44,17 +46,19 @@ def index():
 
 @app.route("/login", methods=["GET"])
 def get_login_page():
-    return render_template("login.html")
+    return render_template("login.html.jinja")
 
 
 @app.route("/login", methods=["POST"])
 def login():
-    username = request.json.get("username", None)
-    password = request.json.get("password", None)
+    logger.info(str(request))
+    username = request.form.get("inputUsername")
+    password = request.form.get("inputPassword")
     if username != "test" or password != "test":
         return jsonify({"msg": "Bad username or password"}), 401
-
-    access_token = create_access_token(identity=username)
+    access_token = create_access_token(
+        identity=username, additional_claims={"testClaim": "test claim's payload"}
+    )
     return jsonify(access_token=access_token)
 
 
@@ -86,6 +90,12 @@ def signup():
     else:
         # returns 202 if user already exists
         return make_response("User already exists. Please Log in.", 202)
+
+
+@app.route("/user", methods=["GET"])
+@jwt_required()
+def get_create_new_user_page():
+    return render_template("create_new_user.html.jinja")
 
 
 @app.route("/user", methods=["POST"])
@@ -126,13 +136,13 @@ def create_candidate():
 
 @app.route("/static/js/<path:path>")
 def serve_static_js(path):
-    """Serve static files"""
+    """Serve static js files"""
     THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
-    return send_from_directory(os.path.join(THIS_MODULE_DIR, 'static', 'js'), path)
+    return send_from_directory(os.path.join(THIS_MODULE_DIR, "static", "js"), path)
 
 
 @app.route("/static/css/<path:path>")
 def serve_static_css(path):
-    """Serve static files"""
+    """Serve static css files"""
     THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
-    return send_from_directory(os.path.join(THIS_MODULE_DIR, 'static', 'css'), path)
+    return send_from_directory(os.path.join(THIS_MODULE_DIR, "static", "css"), path)
