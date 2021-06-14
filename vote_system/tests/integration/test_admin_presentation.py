@@ -38,13 +38,17 @@ def test_create_user(client, token):
 
 def test_create_candidate(client, token):
     response = client.post(
-        "/candidate", headers=get_admin_headers(token), json={"username": "random candidate"}
+        "/candidate",
+        headers=get_admin_headers(token),
+        json={"username": "random candidate"},
     )
     assert response.status_code == 200
 
 
 def test_create_election(client, token):
     response = client.post(
-        "/election", headers=get_admin_headers(token), json={"electionName": "city council 2021"}
+        "/election",
+        headers=get_admin_headers(token),
+        json={"electionName": "city council 2021"},
     )
     assert response.status_code == 200

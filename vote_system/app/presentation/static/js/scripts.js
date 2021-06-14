@@ -24,3 +24,7 @@ window.addEventListener('DOMContentLoaded', event => {
     }
 
 });
+
+function getJwtHeader(){
+    return 'Bearer: ' + localStorage.getItem('jwt');
+}

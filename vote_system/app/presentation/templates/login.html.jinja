@@ -1,0 +1,19 @@
+{% extends "main.html.jinja" %}
+
+{% block main %}
+<form id="loginForm" action="/login">
+  <div class="form-group">
+    <label for="exampleInputUsername">Username</label>
+    <input type="text" class="form-control" name="inputUsername" aria-describedby="usernameHelp" placeholder="Enter email">
+  </div>
+  <div class="form-group">
+    <label for="inputPassword">Password</label>
+    <input type="password" class="form-control" name="inputPassword" placeholder="Password">
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
+
+{% block javascript %}
+  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}
