@@ -23,12 +23,6 @@ def token(client):
     return token
 
 
-def test_index_loads(client):
-    response = client.get("/")
-    assert response.data == b"SUCCESS"
-    assert response.status_code == 200
-
-
 def test_create_user(client, token):
     response = client.post(
         "/user", headers=get_admin_headers(token), json={"username": "newuser"}

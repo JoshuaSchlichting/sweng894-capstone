@@ -3,7 +3,14 @@ from logging import log
 import os
 from datetime import datetime, timedelta
 
-from flask import Flask, request, jsonify, make_response, render_template, send_from_directory
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    make_response,
+    render_template,
+    send_from_directory,
+)
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
