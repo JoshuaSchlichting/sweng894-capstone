@@ -6,3 +6,6 @@ Author/maintainer: Joshua Schlichting
 ___
 # ✔️ Sortofair Voting System 🗳️
 #### An instant-runoff voting system designed to give voters a web based voting experience without the lopsidedness of two party rule.
+
+## CI/CD High level diagram
+![CICD Diagram](./docs/architecture/sweng894-CICD.png)
