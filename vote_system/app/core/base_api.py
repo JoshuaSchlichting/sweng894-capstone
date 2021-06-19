@@ -5,7 +5,7 @@ from .abstract_data_access_layer import AbstractDataAccessLayer
 
 class BaseApi(ABC):
     def __init__(
-        self, token: dict, data_access_layer: AbstractDataAccessLayer, logger
+        self, user_id: int, data_access_layer: AbstractDataAccessLayer, logger
     ) -> None:
         """
         The Api's constructor should be used to determine that a user is a valid admin.
@@ -21,4 +21,4 @@ class BaseApi(ABC):
         """
         self._log = logger
         self._dal = data_access_layer
-        self._token = token
+        self._user_id = user_id
