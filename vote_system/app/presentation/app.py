@@ -63,10 +63,10 @@ def _get_api_factory(user_id: int):
 def _get_user_factory(logger) -> UserFactory:
     return UserFactory(data_access_layer=_get_data_access_layer(), logger=logger)
 
-
+@app.route("/index.html")
+@app.route("/index")
 @app.route("/")
 def index():
-
     user = None
     return render_template("index.html.jinja", user=user)
 
@@ -127,8 +127,7 @@ def signup():
         return make_response("User already exists. Please Log in.", 202)
 
 
-@app.route("/user", methods=["GET"])
-@jwt_required()
+@app.route("/create_user.html", methods=["GET"])
 def get_create_new_user_page():
     return render_template("create_new_user.html.jinja")
 
@@ -148,6 +147,11 @@ def create_user():
             "type": user_info["type"],
         }
     )
+
+
+@app.route("/elections.html", methods=["GET"])
+def get_election_view():
+    return render_template("elections.html.jinja")
 
 
 @app.route("/election", methods=["POST"])
