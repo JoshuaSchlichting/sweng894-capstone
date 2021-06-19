@@ -58,16 +58,35 @@ function getUserIsAdmin(){
     return jwtObj.userType == 'admin';
 }
 
-$(document).ready(function(){
-    let token = parseJwt(getJwt());
-    if (token.isAdmin){
-        document.getElementById('adminPanelBtn').style.visibility='visible';
-    }
-})
+function displayElement(elementId, makeVisible=true){
+    document.getElementById(elementId).style.visibility = (makeVisible ? 'visible' : 'hidden');
+}
+
 
 $(document).ready(function(){
     let token = parseJwt(getJwt());
-    if (token.isAdmin){
-        document.getElementById('adminPanelBtn').style.visibility='visible';
+    if (getUserIsAdmin()){
+        displayElement('adminPanelBtn');
     }
+
+    if (token.username){
+        displayElement('loginBtn', makeVisible=false);
+        document.getElementById('username').innerText = token.username;
+        displayElement('loggedInPrompt');
+    }else{
+        displayElement('loggedInPrompt', makeVisible=false);
+        displayElement('loginBtn');
+    }
+
+
+})
+
+
+$('#logoutBtn').click(function(){
+    localStorage.setItem('jwt', null);
+    window.location = "/"
+})
+
+$('#loginBtn').click(function(){
+    window.location = "/login"
 })
