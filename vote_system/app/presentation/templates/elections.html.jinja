@@ -1,0 +1,12 @@
+{% extends "main.html.jinja" %}
+
+{% block main %}
+<table id="electionsTable" style="width:100%">
+
+</table>
+{% endblock %}
+
+{% block javascript %}
+  <script src="https://cdn.jsdelivr.net/gh/ag-grid/ag-grid@master/community-modules/all-modules/dist/ag-grid-community.min.js"></script>
+  <script src="{{ url_for('static', filename='js/elections.js') }}"></script>
+{% endblock %}
