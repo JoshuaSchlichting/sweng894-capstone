@@ -51,6 +51,8 @@ function getJwt(){
 }
 
 function getUserName(){
+    if(!localStorage.jwt)
+        return;
     let jwtObj = parseJwt(getJwt());
     return jwtObj.username;
 }
@@ -65,27 +67,35 @@ function getUserIsAdmin(){
     return jwtObj.userType == 'admin';
 }
 
-function displayElement(elementId, makeVisible=true){
-    document.getElementById(elementId).style.visibility = (makeVisible ? 'visible' : 'hidden');
+function displayElement(elementId, display=true){
+    document.getElementById(elementId).style.display = (display ? 'block' : 'none');
 }
 
 
 $(document).ready(function(){
-    let token = parseJwt(getJwt());
-    if (getUserIsAdmin()){
-        displayElement('adminPanelBtn');
-    }
+    if(localStorage.jwt){
+        let token;
+        try{
+            token = parseJwt(getJwt());
+        }catch(err){
+            console.log("On load error:" + err);
+        }
 
-    if (token.username){
-        displayElement('loginBtn', makeVisible=false);
-        document.getElementById('username').innerText = token.username;
-        displayElement('loggedInPrompt');
+        if (token != null){
+            if (getUserIsAdmin()){
+                displayElement('adminInterface');
+            }
+
+            if (token.username){
+                displayElement('loginBtn', display=false);
+                document.getElementById('username').innerText = token.username;
+                displayElement('loggedInPrompt');
+            }    
+        }
     }else{
-        displayElement('loggedInPrompt', makeVisible=false);
+        displayElement('loggedInPrompt', display=false);
         displayElement('loginBtn');
     }
-
-
 })
 
 
