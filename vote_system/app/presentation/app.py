@@ -19,7 +19,7 @@ from loguru import logger
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from core import ApiFactory
-from core import AbstractDataAccessLayer
+from core import AbstractDataAccessLayer, UserFactory
 
 
 app = Flask(__name__, static_url_path="/static")
@@ -38,12 +38,23 @@ def _get_data_access_layer() -> AbstractDataAccessLayer:
     dal.cast_vote.return_value = 1234
     dal.create_candidate.return_value = 83445
     dal.create_election.return_value = 972
+    dal.get_user_info_by_name.return_value = {
+        "id": 1,
+        "username": "test_user",
+        "phone_number": "555-555-5555",
+        "email": "fake@fake.com",
+        "type": "admin"
+    }
     return dal
 
 
-def _get_api_factory(token: dict):
+def _get_api_factory(user_id: int):
     dal = _get_data_access_layer()
-    return ApiFactory(token=token, data_access_layer=dal, logger=logger)
+    return ApiFactory(user_id=user_id, data_access_layer=dal, logger=logger)
+
+
+def _get_user_factory(logger) -> UserFactory:
+    return UserFactory(logger=logger)
 
 
 @app.route("/")
@@ -66,11 +77,15 @@ def login():
     if username != "test" or password != "test":
         return jsonify({"msg": "Bad username or password"}), 401
 
-    # TODO: implement access level check
-    user_is_admin = False
+    user_info = _get_data_access_layer().get_user_info_by_name(username)
+
     access_token = create_access_token(
-        identity=username, additional_claims={"testClaim": "test claim's payload", "isAdmin": user_is_admin}
+        identity=username,
+        additional_claims={
+            "userType": user_info["type"]
+        }
     )
+
     return jsonify(access_token=access_token)
 
 
@@ -113,8 +128,12 @@ def get_create_new_user_page():
 @app.route("/user", methods=["POST"])
 @jwt_required()
 def create_user():
+
+    current_user_id = get_jwt_identity()
+    _get_data_access_layer()
     admin_api = _get_api_factory(None).create_admin_api()
     newly_create_user_id = admin_api.create_user(username=request.json["username"])
+    _get_user_factory(logger).get_user()
     return jsonify({"userId": newly_create_user_id})
 
 
