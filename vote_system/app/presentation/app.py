@@ -54,7 +54,7 @@ def _get_api_factory(user_id: int):
 
 
 def _get_user_factory(logger) -> UserFactory:
-    return UserFactory(logger=logger)
+    return UserFactory(data_access_layer=_get_data_access_layer(), logger=logger)
 
 
 @app.route("/")
