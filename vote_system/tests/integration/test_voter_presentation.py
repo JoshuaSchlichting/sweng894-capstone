@@ -12,7 +12,7 @@ def client():
 
 @pytest.fixture
 def token(client):
-    response = client.post("/login", json={"username": "test", "password": "test"})
+    response = client.post("/login", data=dict(inputUsername="test", inputPassword="test"))
     token = response.json["access_token"]
     return token
 
