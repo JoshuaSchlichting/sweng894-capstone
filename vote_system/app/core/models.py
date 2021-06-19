@@ -9,6 +9,7 @@ class User:
     name: str
     phone_number: str
     email_address: str
+    user_type: str
 
 
 @dataclass
