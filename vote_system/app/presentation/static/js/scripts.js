@@ -28,3 +28,46 @@ window.addEventListener('DOMContentLoaded', event => {
 function getJwtHeader(){
     return 'Bearer: ' + localStorage.getItem('jwt');
 }
+
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+};
+
+function getJwt(){
+    return localStorage.jwt;
+}
+
+function getUserName(){
+    let jwtObj = parseJwt(getJwt());
+    return jwtObj.username;
+}
+
+function getUserType(){
+    let jwtObj = parseJwt(getJwt());
+    return jwtObj.userType;
+}
+
+function getUserIsAdmin(){
+    let jwtObj = parseJwt(getJwt());
+    return jwtObj.userType == 'admin';
+}
+
+$(document).ready(function(){
+    let token = parseJwt(getJwt());
+    if (token.isAdmin){
+        document.getElementById('adminPanelBtn').style.visibility='visible';
+    }
+})
+
+$(document).ready(function(){
+    let token = parseJwt(getJwt());
+    if (token.isAdmin){
+        document.getElementById('adminPanelBtn').style.visibility='visible';
+    }
+})
