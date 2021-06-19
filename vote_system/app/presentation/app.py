@@ -40,14 +40,14 @@ def _get_data_access_layer() -> AbstractDataAccessLayer:
     dal.create_election.return_value = 972
     dal.get_user_info_by_name.return_value = {
         "id": 1,
-        "username": "test_user",
+        "username": "test",
         "phone_number": "555-555-5555",
         "email": "fake@fake.com",
         "type": "admin",
     }
     dal.get_user_info_by_id.return_value = {
         "id": 1,
-        "username": "test_user",
+        "username": "test",
         "phone_number": "555-555-5555",
         "email": "fake@fake.com",
         "type": "admin",
@@ -90,7 +90,7 @@ def login():
         identity=user_info["id"],
         additional_claims={
             "userType": user_info["type"],
-            "userName": user_info["username"],
+            "username": user_info["username"],
         },
     )
 
