@@ -19,7 +19,6 @@ def token(client):
 
 def get_voter_headers(token):
     return {
-        "x-access-token": {"userType": "voter"},
         "Authorization": f"Bearer {token}",
     }
 
