@@ -46,7 +46,7 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def get_user_info_by_id(user_id: int) -> dict: 
+    def get_user_info_by_id(user_id: int) -> dict:
         """Retrieves user data from database using the user id"""
 
     def get_user_info_by_name(username: str) -> dict:

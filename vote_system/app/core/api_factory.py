@@ -27,4 +27,6 @@ class ApiFactory:
 
     def create_user_api(self) -> UserApi:
         # TODO validate token for REGISTERED USERS
-        return UserApi(user_id=self._user_id, data_access_layer=self._dal, logger=self._log)
+        return UserApi(
+            user_id=self._user_id, data_access_layer=self._dal, logger=self._log
+        )
