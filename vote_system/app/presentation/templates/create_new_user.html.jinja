@@ -5,16 +5,40 @@
 <form id="createUserForm" action="/user">
   <div class="form-group">
     <label for="exampleInputUsername">Username</label>
-    <input type="text" class="form-control" name="inputUsername" aria-describedby="usernameHelp" placeholder="Enter email">
+    <input type="text" class="form-control" name="inputUsername" aria-describedby="usernameHelp" placeholder="Enter username">
   </div>
   <div class="form-group">
     <label for="inputPassword">Password</label>
-    <input type="password" class="form-control" name="inputPassword" placeholder="Password">
+    <input type="password" class="form-control" name="inputPassword" placeholder="Enter password">
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary">Create new user</button>
 </form>
 {% endblock %}
 
 {% block javascript %}
-  <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+  <script type="text/javascript">
+    $("#createUserForm").submit(function(e) {
+
+      e.preventDefault(); // avoid to execute the actual submit of the form.
+
+      var form = $(this);
+      var url = form.attr('action');
+
+      $.ajax({
+        type: "POST",
+        url: url,
+        headers: getJwtHeader(),
+        data: form.serialize(), // serializes the form's elements.
+        success: function(data)
+        {
+          if(data){
+              localStorage.setItem('jwt', data.access_token);
+              window.location = "/";
+          }else{
+              alert("An error occurred while creating the user!!");
+          }
+        }
+      });
+  });
+  </script>
 {% endblock %}
