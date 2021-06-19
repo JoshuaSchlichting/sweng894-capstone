@@ -30,11 +30,18 @@ function getJwtHeader(){
 }
 
 function parseJwt (token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+    if(localStorage.jwt == "null") return;
+    try{
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }catch(err){
+        console.log("An error occurred while attempting to parase a JWT!!!");
+        console.log(err);
+        return null;
+    }
 
     return JSON.parse(jsonPayload);
 };
