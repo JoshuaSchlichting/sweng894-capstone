@@ -32,13 +32,19 @@ jwt = JWTManager(app)
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     logger.warning("Using mocked up data access layer - you are OFFLINE!!!")
     from unittest.mock import Mock
-
     dal = Mock(spec=AbstractDataAccessLayer)
     dal.create_user.return_value = 3456
     dal.cast_vote.return_value = 1234
     dal.create_candidate.return_value = 83445
     dal.create_election.return_value = 972
     dal.get_user_info_by_name.return_value = {
+        "id": 1,
+        "username": "test_user",
+        "phone_number": "555-555-5555",
+        "email": "fake@fake.com",
+        "type": "admin"
+    }
+    dal.get_user_info_by_id.return_value = {
         "id": 1,
         "username": "test_user",
         "phone_number": "555-555-5555",
@@ -80,9 +86,10 @@ def login():
     user_info = _get_data_access_layer().get_user_info_by_name(username)
 
     access_token = create_access_token(
-        identity=username,
+        identity=user_info["id"],
         additional_claims={
-            "userType": user_info["type"]
+            "userType": user_info["type"],
+            "userName": user_info["username"]
         }
     )
 
@@ -130,11 +137,10 @@ def get_create_new_user_page():
 def create_user():
 
     current_user_id = get_jwt_identity()
-    _get_data_access_layer()
-    admin_api = _get_api_factory(None).create_admin_api()
+    admin_api = _get_api_factory(user_id=current_user_id).create_admin_api()
     newly_create_user_id = admin_api.create_user(username=request.json["username"])
-    _get_user_factory(logger).get_user()
-    return jsonify({"userId": newly_create_user_id})
+    user_info = _get_data_access_layer().get_user_info_by_id(newly_create_user_id)
+    return jsonify({"userId": newly_create_user_id, "username": user_info["username"], "type": user_info["type"]})
 
 
 @app.route("/election", methods=["POST"])
