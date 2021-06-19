@@ -48,7 +48,9 @@ def _get_api_factory(token: dict):
 
 @app.route("/")
 def index():
-    return "SUCCESS"
+
+    user = None
+    return render_template("index.html.jinja", user=user)
 
 
 @app.route("/login", methods=["GET"])
@@ -63,8 +65,11 @@ def login():
     password = request.form.get("inputPassword")
     if username != "test" or password != "test":
         return jsonify({"msg": "Bad username or password"}), 401
+
+    # TODO: implement access level check
+    user_is_admin = False
     access_token = create_access_token(
-        identity=username, additional_claims={"testClaim": "test claim's payload"}
+        identity=username, additional_claims={"testClaim": "test claim's payload", "isAdmin": user_is_admin}
     )
     return jsonify(access_token=access_token)
 
@@ -139,6 +144,12 @@ def create_candidate():
     admin_api = _get_api_factory(None).create_admin_api()
     newly_create_user_id = admin_api.create_user(username=request.json["username"])
     return jsonify({"userId": newly_create_user_id})
+
+
+@app.route("/admin", methods=["GET"])
+@jwt_required()
+def admin_page():
+    return render_template("admin_panel.html.jinja")
 
 
 @app.route("/static/js/<path:path>")
