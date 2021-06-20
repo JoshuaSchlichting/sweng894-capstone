@@ -126,8 +126,6 @@ def create_user():
     )
 
 
-
-
 @app.route("/election", methods=["POST"])
 @jwt_required()
 def create_election():
