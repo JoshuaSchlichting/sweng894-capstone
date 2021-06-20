@@ -1,15 +1,8 @@
-import json
-from logging import log
-import os
-from datetime import datetime, timedelta
-
 from flask import (
     Flask,
     request,
     jsonify,
-    make_response,
-    render_template,
-    send_from_directory,
+    make_response
 )
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -27,6 +20,7 @@ SECRET_KEY = "change this for production"
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
 jwt = JWTManager(app)
+from . import views # noqa This is necessary for routes outside of this file, after app is created.
 
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
@@ -62,18 +56,6 @@ def _get_api_factory(user_id: int):
 
 def _get_user_factory(logger) -> UserFactory:
     return UserFactory(data_access_layer=_get_data_access_layer(), logger=logger)
-
-@app.route("/index.html")
-@app.route("/index")
-@app.route("/")
-def index():
-    user = None
-    return render_template("index.html.jinja", user=user)
-
-
-@app.route("/login", methods=["GET"])
-def get_login_page():
-    return render_template("login.html.jinja")
 
 
 @app.route("/login", methods=["POST"])
@@ -127,11 +109,6 @@ def signup():
         return make_response("User already exists. Please Log in.", 202)
 
 
-@app.route("/create_user.html", methods=["GET"])
-def get_create_new_user_page():
-    return render_template("create_new_user.html.jinja")
-
-
 @app.route("/user", methods=["POST"])
 @jwt_required()
 def create_user():
@@ -149,9 +126,6 @@ def create_user():
     )
 
 
-@app.route("/elections.html", methods=["GET"])
-def get_election_view():
-    return render_template("elections.html.jinja")
 
 
 @app.route("/election", methods=["POST"])
@@ -182,21 +156,3 @@ def create_candidate():
     return jsonify({"userId": newly_create_user_id})
 
 
-@app.route("/admin", methods=["GET"])
-@jwt_required()
-def admin_page():
-    return render_template("admin_panel.html.jinja")
-
-
-@app.route("/static/js/<path:path>")
-def serve_static_js(path):
-    """Serve static js files"""
-    THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
-    return send_from_directory(os.path.join(THIS_MODULE_DIR, "static", "js"), path)
-
-
-@app.route("/static/css/<path:path>")
-def serve_static_css(path):
-    """Serve static css files"""
-    THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
-    return send_from_directory(os.path.join(THIS_MODULE_DIR, "static", "css"), path)
