@@ -8,12 +8,20 @@
     <input type="text" class="form-control" name="inputElectionName" aria-describedby="ElectionNameHelp" placeholder="Enter name of election">
   </div>
   <div class="form-group">
-    <label for="inputPassword"></label>
-    <input type="password" class="form-control" name="inputPassword" placeholder="Enter password">
+    <label for="inputStartDate">Start date</label>
+    <input type="date" class="form-control" name="inputStartDate">
+    <label for="inputStartTime">Start time</label>
+    <input type="time" class="form-control" name="inputStartTime">
+    <label for="inputEndDate">End date</label>
+    <input type="date" class="form-control" name="inputEndDate">
+    <label for="inputEndTime">End time</label>
+    <input type="time" class="form-control" name="inputEndTime">
   </div>
-  <button type="submit" class="btn btn-primary">Create new user</button>
+  <label for="candidatesGrid">Select candidates to participate in election:</label>
   <div id="candidatesGrid" style="height: 200px; width:500px;" class="ag-theme-alpine"></div>
+  <button type="submit" class="btn btn-primary">Create election</button>
 </form>
+
 {% endblock %}
 
 {% block javascript %}
@@ -37,69 +45,65 @@
             document.getElementById("createElectionForm").reset();
         }
       });
-  });
+    });
 
-function CheckboxRenderer() {}
+    function CheckboxRenderer() {}
 
-CheckboxRenderer.prototype.init = function(params) {
-  this.params = params;
+    CheckboxRenderer.prototype.init = function(params) {
+        this.params = params;
 
-  this.eGui = document.createElement('input');
-  this.eGui.type = 'checkbox';
-  this.eGui.checked = params.value;
+        this.eGui = document.createElement('input');
+        this.eGui.type = 'checkbox';
+        this.eGui.checked = params.value;
 
-  this.checkedHandler = this.checkedHandler.bind(this);
-  this.eGui.addEventListener('click', this.checkedHandler);
-}
+        this.checkedHandler = this.checkedHandler.bind(this);
+        this.eGui.addEventListener('click', this.checkedHandler);
+    }
 
-CheckboxRenderer.prototype.checkedHandler = function(e) {
-  let checked = e.target.checked;
-  let colId = this.params.column.colId;
-  this.params.node.setDataValue(colId, checked);
-}
+    CheckboxRenderer.prototype.checkedHandler = function(e) {
+        let checked = e.target.checked;
+        let colId = this.params.column.colId;
+        this.params.node.setDataValue(colId, checked);
+    }
 
-CheckboxRenderer.prototype.getGui = function(params) {
-  return this.eGui;
-}
+    CheckboxRenderer.prototype.getGui = function(params) {
+        return this.eGui;
+    }
 
-CheckboxRenderer.prototype.destroy = function(params) {
-  this.eGui.removeEventListener('click', this.checkedHandler);
-}
+    CheckboxRenderer.prototype.destroy = function(params) {
+        this.eGui.removeEventListener('click', this.checkedHandler);
+    }
 
 
-  
-const columnDefs = [
-  {
-    headerName: 'Select',
-    field: 'selector',
-    cellRenderer: 'checkboxRenderer'
-  },
-  { field: "Candidate" }
-];
+        
+    const columnDefs = [
+        {
+        headerName: 'Select',
+        field: 'selector',
+        cellRenderer: 'checkboxRenderer'
+        },
+        { field: "Candidate" }
+    ];
 
-// specify the data
-const rowData = [
-  { Candidate: "Celica"},
-  { Candidate: "test user"}
-];
+        // specify the data
+    const rowData = [
+        { Candidate: "Celica"},
+        { Candidate: "test user"}
+    ];
 
-// let the grid know which columns and what data to use
-const gridOptions = {
-  columnDefs: columnDefs,
-  rowData: rowData
-};
-gridOptions.components = {
-  checkboxRenderer: CheckboxRenderer
-}
-// setup the grid after the page has finished loading
-document.addEventListener('DOMContentLoaded', () => {
-    const gridDiv = document.querySelector('#candidatesGrid');
-    new agGrid.Grid(gridDiv, gridOptions);
-});
-
-$()(function(){
-
-})
+        // let the grid know which columns and what data to use
+    const gridOptions = {
+        columnDefs: columnDefs,
+        rowData: rowData
+    };
+    gridOptions.components = {
+        checkboxRenderer: CheckboxRenderer
+    }
+    // setup the grid after the page has finished loading
+    document.addEventListener('DOMContentLoaded', () => {
+        const gridDiv = document.querySelector('#candidatesGrid');
+        new agGrid.Grid(gridDiv, gridOptions);
+    });
 
   </script>
 {% endblock %}
