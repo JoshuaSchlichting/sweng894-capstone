@@ -22,6 +22,10 @@ def get_create_new_user_page():
     return render_template("create_new_user.html.jinja")
 
 
+@app.route("/create_election.html", methods=["GET"])
+def get_create_new_election_page():
+    return render_template("create_election.html.jinja")
+
 @app.route("/elections.html", methods=["GET"])
 def get_election_view():
     return render_template("elections.html.jinja")
