@@ -9,31 +9,22 @@ class User:
     name: str
     phone_number: str
     email_address: str
-    user_type: str
 
+@dataclass
+class Admin:
+    pass
 
 @dataclass
 class Candidate(User):
     party: str
-
 
 @dataclass
 class Voter(User):
-    pass
-
+    party: str
 
 @dataclass
 class Candidate(User):
     party: str
-
-
-@dataclass
-class Election:
-    id: int
-    candidates: Set[int]
-    start_ts: datetime
-    end_ts: datetime
-
 
 @dataclass
 class Vote:
@@ -41,3 +32,11 @@ class Vote:
     cast_by: int
     ranked_candidates_list: List[int]
     timestamp_utc: datetime
+
+@dataclass
+class Election:
+    id: int
+    candidates: Set[int]
+    votes: List[Vote]
+    start_ts: datetime
+    end_ts: datetime
