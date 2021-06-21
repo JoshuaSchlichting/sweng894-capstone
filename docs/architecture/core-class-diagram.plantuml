@@ -10,11 +10,15 @@ namespace core{
     }
 
     class Voter {
+        +party: str
     }
     class Candidate{
         +party: str
     }
 
+    class Admin extends User{
+
+    }
 
     Voter -up-|> User
     Candidate -up-|> User
@@ -32,8 +36,9 @@ namespace core{
         +timestamp: datetime
     }
 
+    class BaseApi{}
 
-    class UserApi{
+    class UserApi extends BaseApi{
         +__init__(token: dict)
         +retrieve_election_report(election_id: int)
         +log_in(username: str, password: str)
@@ -42,14 +47,31 @@ namespace core{
     UserApi --> AbstractDataAccessLayer : << uses >>
     UserApi --> ElectionSystem : <<uses>>
 
-    class VoterApi{
+    class VoterApi extends BaseApi{
         +cast_vote(user_id: int, ranked_candidates: list, election_id: int)
     }
     VoterApi --> AbstractDataAccessLayer : << uses >>
     VoterApi --> Vote : <<creates>>
 
+
+
+    class ApiFactory{
+        +create_voter_api() -> VoterApi
+        +create_admin_api() -> AdminApi
+        +create_user_api() -> UserApi
+    }
+
+    ApiFactory --> VoterApi : <<creates>>
+    ApiFactory --> AdminApi : <<creates>>
+    ApiFactory --> UserApi : <<creates>>
+
     abstract class AbstractDataAccessLayer{
-        +{abstract}vote(user_id: int, ranked_dandidates: list, election_id: int)
+        +{abstract}create_user(user_name: str) -> int
+        +{abstract}cast_vote(user_id: int, election_id: int, ranked_candidates: List[int]) -> int
+        +{abstract}create_candidate(user_name: str) -> int
+        +{abstract}create_election(election_name: str) -> int
+        +{abstract}get_user_info_by_id(user_id: int) -> dict
+        +{abstract}get_user_info_by_name(username: str) -> dict
     }
 
     class ElectionSystem{
@@ -57,23 +79,7 @@ namespace core{
         +end_election(election_id: int)
     }
     AdminApi --> ElectionSystem : <<uses>>
-
-    enum UserAccessLevel{
-        +Admin
-        +Normal
-    }
-    abstract class AbstractAuthLayer{
-        +{abstract}log_in(username: str, password: str): int
-        +{abstract}get_token_is_valid(token: dict): bool
-        +{abstract}get_token_level(token: dict): int
-    }
-    AbstractAuthLayer --> UserAccessLevel
-
-    AdminApi --> AbstractAuthLayer
-    UserApi --> AbstractAuthLayer
-    VoterApi --> AbstractAuthLayer
-
-    class AdminApi{
+    class AdminApi extends BaseApi{
         +__init__(token: dict)
         +create_user(usename: str)
         +create_candidate(username: str)
