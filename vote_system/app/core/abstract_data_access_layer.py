@@ -44,3 +44,10 @@ class AbstractDataAccessLayer(ABC):
         Return:
             id of the newly created election
         """
+
+    @abstractmethod
+    def get_user_info_by_id(user_id: int) -> dict:
+        """Retrieves user data from database using the user id"""
+
+    def get_user_info_by_name(username: str) -> dict:
+        """Retrieves user data form database using the username"""

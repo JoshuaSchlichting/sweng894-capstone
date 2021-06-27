@@ -21,7 +21,7 @@ def api(mocker):
     dal.create_election.return_value = MOCK_NEW_ELECTION_ID
     dal.create_candidate.return_value = MOCK_NEW_CANDIDATE_ID
 
-    api_factory = ApiFactory(token={}, data_access_layer=dal, logger=logger)
+    api_factory = ApiFactory(user_id=1, data_access_layer=dal, logger=logger)
     return api_factory.create_admin_api()
 
 

@@ -1,15 +1,8 @@
-import json
-from logging import log
-import os
-from datetime import datetime, timedelta
-
 from flask import (
     Flask,
     request,
     jsonify,
-    make_response,
-    render_template,
-    send_from_directory,
+    make_response
 )
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -19,7 +12,7 @@ from loguru import logger
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from core import ApiFactory
-from core import AbstractDataAccessLayer
+from core import AbstractDataAccessLayer, UserFactory
 
 
 app = Flask(__name__, static_url_path="/static")
@@ -27,6 +20,7 @@ SECRET_KEY = "change this for production"
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
 jwt = JWTManager(app)
+from . import views # noqa This is necessary for routes outside of this file, after app is created.
 
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
@@ -38,22 +32,30 @@ def _get_data_access_layer() -> AbstractDataAccessLayer:
     dal.cast_vote.return_value = 1234
     dal.create_candidate.return_value = 83445
     dal.create_election.return_value = 972
+    dal.get_user_info_by_name.return_value = {
+        "id": 1,
+        "username": "test",
+        "phone_number": "555-555-5555",
+        "email": "fake@fake.com",
+        "type": "admin",
+    }
+    dal.get_user_info_by_id.return_value = {
+        "id": 1,
+        "username": "test",
+        "phone_number": "555-555-5555",
+        "email": "fake@fake.com",
+        "type": "admin",
+    }
     return dal
 
 
-def _get_api_factory(token: dict):
+def _get_api_factory(user_id: int):
     dal = _get_data_access_layer()
-    return ApiFactory(token=token, data_access_layer=dal, logger=logger)
+    return ApiFactory(user_id=user_id, data_access_layer=dal, logger=logger)
 
 
-@app.route("/")
-def index():
-    return "SUCCESS"
-
-
-@app.route("/login", methods=["GET"])
-def get_login_page():
-    return render_template("login.html.jinja")
+def _get_user_factory(logger) -> UserFactory:
+    return UserFactory(data_access_layer=_get_data_access_layer(), logger=logger)
 
 
 @app.route("/login", methods=["POST"])
@@ -63,9 +65,17 @@ def login():
     password = request.form.get("inputPassword")
     if username != "test" or password != "test":
         return jsonify({"msg": "Bad username or password"}), 401
+
+    user_info = _get_data_access_layer().get_user_info_by_name(username)
+
     access_token = create_access_token(
-        identity=username, additional_claims={"testClaim": "test claim's payload"}
+        identity=user_info["id"],
+        additional_claims={
+            "userType": user_info["type"],
+            "username": user_info["username"],
+        },
     )
+
     return jsonify(access_token=access_token)
 
 
@@ -99,18 +109,21 @@ def signup():
         return make_response("User already exists. Please Log in.", 202)
 
 
-@app.route("/user", methods=["GET"])
-@jwt_required()
-def get_create_new_user_page():
-    return render_template("create_new_user.html.jinja")
-
-
 @app.route("/user", methods=["POST"])
 @jwt_required()
 def create_user():
-    admin_api = _get_api_factory(None).create_admin_api()
+
+    current_user_id = get_jwt_identity()
+    admin_api = _get_api_factory(user_id=current_user_id).create_admin_api()
     newly_create_user_id = admin_api.create_user(username=request.json["username"])
-    return jsonify({"userId": newly_create_user_id})
+    user_info = _get_data_access_layer().get_user_info_by_id(newly_create_user_id)
+    return jsonify(
+        {
+            "userId": newly_create_user_id,
+            "username": user_info["username"],
+            "type": user_info["type"],
+        }
+    )
 
 
 @app.route("/election", methods=["POST"])
@@ -141,15 +154,3 @@ def create_candidate():
     return jsonify({"userId": newly_create_user_id})
 
 
-@app.route("/static/js/<path:path>")
-def serve_static_js(path):
-    """Serve static js files"""
-    THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
-    return send_from_directory(os.path.join(THIS_MODULE_DIR, "static", "js"), path)
-
-
-@app.route("/static/css/<path:path>")
-def serve_static_css(path):
-    """Serve static css files"""
-    THIS_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
-    return send_from_directory(os.path.join(THIS_MODULE_DIR, "static", "css"), path)

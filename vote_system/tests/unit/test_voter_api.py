@@ -19,7 +19,7 @@ def api(mocker):
     dal = mocker.Mock(spec=AbstractDataAccessLayer)
     dal.cast_vote.return_value = MOCK_NEW_VOTE_ID
 
-    api_factory = ApiFactory(token={}, data_access_layer=dal, logger=logger)
+    api_factory = ApiFactory(user_id=1, data_access_layer=dal, logger=logger)
     return api_factory.create_voter_api()
 
 

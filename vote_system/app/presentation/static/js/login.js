@@ -11,8 +11,12 @@ $("#loginForm").submit(function(e) {
         data: form.serialize(), // serializes the form's elements.
         success: function(data)
         {
-            alert(String(data.access_token)); // show response from the php script.
-            localStorage.setItem('jwt', data.access_token);
+            if(data){
+                localStorage.setItem('jwt', data.access_token);
+                window.location = "/";
+            }else{
+                alert("An error occurred while logging in!");
+            }
         }
     });
 });

@@ -28,3 +28,82 @@ window.addEventListener('DOMContentLoaded', event => {
 function getJwtHeader(){
     return 'Bearer: ' + localStorage.getItem('jwt');
 }
+
+function parseJwt (token) {
+    if(localStorage.jwt == "null") return;
+    try{
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }catch(err){
+        console.log("An error occurred while attempting to parase a JWT!!!");
+        console.log(err);
+        return null;
+    }
+
+    return JSON.parse(jsonPayload);
+};
+
+function getJwt(){
+    return localStorage.jwt;
+}
+
+function getUserName(){
+    if(!localStorage.jwt)
+        return;
+    let jwtObj = parseJwt(getJwt());
+    return jwtObj.username;
+}
+
+function getUserType(){
+    let jwtObj = parseJwt(getJwt());
+    return jwtObj.userType;
+}
+
+function getUserIsAdmin(){
+    let jwtObj = parseJwt(getJwt());
+    return jwtObj.userType == 'admin';
+}
+
+function displayElement(elementId, display=true){
+    document.getElementById(elementId).style.display = (display ? 'block' : 'none');
+}
+
+
+$(document).ready(function(){
+    if(localStorage.jwt){
+        let token;
+        try{
+            token = parseJwt(getJwt());
+        }catch(err){
+            console.log("On load error:" + err);
+        }
+
+        if (token != null){
+            if (getUserIsAdmin()){
+                displayElement('adminInterface');
+            }
+
+            if (token.username){
+                displayElement('loginBtn', display=false);
+                document.getElementById('username').innerText = token.username;
+                displayElement('loggedInPrompt');
+            }    
+        }
+    }else{
+        displayElement('loggedInPrompt', display=false);
+        displayElement('loginBtn');
+    }
+})
+
+
+$('#logoutBtn').click(function(){
+    localStorage.setItem('jwt', null);
+    window.location = "/"
+})
+
+$('#loginBtn').click(function(){
+    window.location = "/login"
+})
