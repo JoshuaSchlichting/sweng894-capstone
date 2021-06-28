@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 
 class AbstractDataAccessLayer(ABC):
     @abstractmethod
-    def create_user(username: str) -> int:
+    def create_user(username: str, password: Optional[str]=None) -> int:
         """Creates new user
         Args:
             username: name of user to create
@@ -28,6 +28,17 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
+    def get_vote(id: int) -> dict:
+        """Retrieves vote data from collection
+
+        Args:
+            id: id of vote being retrieved
+
+        Returns:
+            dict with data from collection
+        """
+
+    @abstractmethod
     def create_candidate(username: str) -> int:
         """Creates a candidate in the system
 
@@ -38,11 +49,26 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def create_election(election_name: str) -> int:
+    def create_election(election_name: str, candidate_list: List[int]) -> int:
         """Creates a new election in the system.
+
+        Args:
+            election_name: self explanatory
+            candidate_list: list of candidate ID's
 
         Return:
             id of the newly created election
+        """
+
+    @abstractmethod
+    def get_election(id: int) -> dict:
+        """Retrieves an election object
+        
+        Args:
+            id: ID of the election
+        
+        Returns:
+            dict of election data
         """
 
     @abstractmethod
