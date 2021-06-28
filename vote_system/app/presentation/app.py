@@ -115,7 +115,7 @@ def create_user():
 
     current_user_id = get_jwt_identity()
     admin_api = _get_api_factory(user_id=current_user_id).create_admin_api()
-    newly_create_user_id = admin_api.create_user(username=request.json["username"])
+    newly_create_user_id = admin_api.create_user(username=request.json["username"], password=request.json["password"])
     user_info = _get_data_access_layer().get_user_info_by_id(newly_create_user_id)
     return jsonify(
         {
