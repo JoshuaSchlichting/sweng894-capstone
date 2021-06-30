@@ -4,7 +4,7 @@ from typing import List, Optional
 
 class AbstractDataAccessLayer(ABC):
     @abstractmethod
-    def create_user(username: str, password: Optional[str]=None) -> int:
+    def create_user(self, username: str, password: Optional[str]=None) -> int:
         """Creates new user
         Args:
             username: name of user to create
@@ -14,7 +14,10 @@ class AbstractDataAccessLayer(ABC):
 
     @abstractmethod
     def cast_vote(
-        user_id: int, election_id: int, ranked_candidate_list: List[int]
+        self,
+        user_id: int,
+        election_id: int,
+        ranked_candidate_list: List[int]
     ) -> int:
         """Creates a new vote in the database
 
@@ -28,7 +31,7 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def get_vote(id: int) -> dict:
+    def get_vote(self, id: int) -> dict:
         """Retrieves vote data from collection
 
         Args:
@@ -39,7 +42,7 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def create_candidate(username: str) -> int:
+    def create_candidate(self, username: str) -> int:
         """Creates a candidate in the system
 
         If a user with the same username already exists, then the existing user_id is returned.
@@ -49,7 +52,7 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def create_election(election_name: str, candidate_list: List[int]) -> int:
+    def create_election(self, election_name: str, candidate_list: List[int]) -> int:
         """Creates a new election in the system.
 
         Args:
@@ -61,7 +64,7 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def get_election(id: int) -> dict:
+    def get_election(self, id: int) -> dict:
         """Retrieves an election object
         
         Args:
@@ -72,8 +75,8 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def get_user_info_by_id(user_id: int) -> dict:
+    def get_user_info_by_id(self, user_id: int) -> dict:
         """Retrieves user data from database using the user id"""
 
-    def get_user_info_by_name(username: str) -> dict:
+    def get_user_info_by_name(self, username: str) -> dict:
         """Retrieves user data form database using the username"""
