@@ -3,14 +3,13 @@ import pytest
 from mongomock import MongoClient
 from loguru import logger
 
-from core.dal import create_mongo_api
+from db_implementation import MongoDbApi, create_mongo_api
 
 
-
-pytest.fixture
-def sud():
+@pytest.fixture
+def sud() -> MongoDbApi:
     """System Under Test (SUD), which is the data access layer for mongo DB"""
-    return create_mongo_api(MongoClient())
+    return MongoDbApi(MongoClient())
 
 
 def test_cast_vote(sud):
@@ -37,7 +36,7 @@ def test_cast_vote(sud):
 
 def test_create_candidate_from_non_existing_user(sud):
     user_id = sud.create_candidate("John Doe")
-    assert type(user_id) is int
+    assert type(user_id) is str
 
 
 def test_create_candidate_from_existing_user(sud):
@@ -58,24 +57,24 @@ def test_create_user(sud):
     username = "test user"
     user_id = sud.create_user(username)
     user_info = sud.get_user_info_by_name(username)
-    assert user_info["id"] == user_id
+    assert str(user_info["id"]) == user_id
 
 
 def test_create_election(sud):
 
     # arrange
-    ranked_candidate_list = [51235, 552346, 6123, 4123, 41234]
+    candidate_list = [51235, 552346, 6123, 4123, 41234]
 
     # act
-    election_id = sud.create_election("city council", ranked_candidate_list) 
+    election_id = sud.create_election("city council", candidate_list) 
     election = sud.get_election(election_id)
 
     # assert
-    assert election["ranked_candidate_list"] == ranked_candidate_list
-    assert type(election_id) is int
+    assert election["candidate_list"] == candidate_list
+    assert type(election_id) is str
 
 
 def test_get_user_is_valid(sud):
+    assert sud.get_user_is_valid(username="test", password="testpassword") is False
+    sud.create_user("test", "testpassword")
     assert sud.get_user_is_valid(username="test", password="testpassword") is True
-
-def test_create_password(username, password)
