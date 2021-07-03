@@ -25,28 +25,33 @@ from . import views # noqa This is necessary for routes outside of this file, af
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     logger.warning("Using mocked up data access layer - you are OFFLINE!!!")
-    from unittest.mock import Mock
+    from mongomock import MongoClient
+    import db_implementation
+    db = db_implementation.MongoDbApi(MongoClient())
+    db.create_user('test', 'test')
+    return db
+    # from unittest.mock import Mock
 
-    dal = Mock(spec=AbstractDataAccessLayer)
-    dal.create_user.return_value = 3456
-    dal.cast_vote.return_value = 1234
-    dal.create_candidate.return_value = 83445
-    dal.create_election.return_value = 972
-    dal.get_user_info_by_name.return_value = {
-        "id": 1,
-        "username": "test",
-        "phone_number": "555-555-5555",
-        "email": "fake@fake.com",
-        "type": "admin",
-    }
-    dal.get_user_info_by_id.return_value = {
-        "id": 1,
-        "username": "test",
-        "phone_number": "555-555-5555",
-        "email": "fake@fake.com",
-        "type": "admin",
-    }
-    return dal
+    # dal = Mock(spec=AbstractDataAccessLayer)
+    # dal.create_user.return_value = 3456
+    # dal.cast_vote.return_value = 1234
+    # dal.create_candidate.return_value = 83445
+    # dal.create_election.return_value = 972
+    # dal.get_user_info_by_name.return_value = {
+    #     "id": 1,
+    #     "username": "test",
+    #     "phone_number": "555-555-5555",
+    #     "email": "fake@fake.com",
+    #     "type": "admin",
+    # }
+    # dal.get_user_info_by_id.return_value = {
+    #     "id": 1,
+    #     "username": "test",
+    #     "phone_number": "555-555-5555",
+    #     "email": "fake@fake.com",
+    #     "type": "admin",
+    # }
+    # return dal
 
 
 def _get_api_factory(user_id: int):
