@@ -6,6 +6,10 @@ from bson.objectid import ObjectId
 from core.abstract_data_access_layer import AbstractDataAccessLayer
 
 
+class UserNotFoundError(Exception):
+    pass
+
+
 class MongoDbApi(AbstractDataAccessLayer):
 
     def __init__(self, mongo_client: MongoClient) -> None:
@@ -42,7 +46,10 @@ class MongoDbApi(AbstractDataAccessLayer):
     
     def get_user_info_by_name(self, username: str) -> dict:
         user_info = self._db.users.find_one({"username": username})
-        user_info["id"] = user_info.pop("_id")
+        if user_info:
+            user_info["id"] = str(user_info.pop("_id"))
+        else:
+            raise UserNotFoundError(f"Database returned NULL when searching for '{username}'")
         return user_info
     
     def get_user_is_valid(self, username: str, password: str) -> bool:
