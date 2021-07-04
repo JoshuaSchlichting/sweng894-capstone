@@ -1,10 +1,12 @@
+from typing import Optional
+
 from .base_api import BaseApi
 
 
 class AdminApi(BaseApi):
-    def create_user(self, username: str) -> int:
+    def create_user(self, username: str, password: Optional[str]=None) -> int:
         """Create new user and return new user's ID"""
-        return self._dal.create_user(username=username)
+        return self._dal.create_user(username=username, password=password)
 
     def create_candidate(self, username: str) -> int:
         """Adds candidate flag to username
@@ -23,6 +25,10 @@ class AdminApi(BaseApi):
             id of newly created election
         """
         return self._dal.create_election(election_name=election_name)
+
+    def add_candidate_to_election(self, election_id: str, candidate_id: str) -> dict:
+        """Adds candidate to an election, returning the election information"""
+        return self._dal.add_candidate_to_election(election_id=election_id, candidate_id=candidate_id)
 
     def declare_winner(election_id: int) -> int:
         """Prematurely ends election

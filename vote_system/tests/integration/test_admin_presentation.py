@@ -17,6 +17,15 @@ def client():
 
 
 @pytest.fixture
+def data_access_layer():
+    from mongomock import MongoClient
+    import db_implementation
+    db = db_implementation.MongoDbApi(MongoClient())
+    db.create_user('test', 'test')
+    return db
+
+
+@pytest.fixture
 def token(client):
     response = client.post(
         "/login", data=dict(inputUsername="test", inputPassword="test")
@@ -27,7 +36,10 @@ def token(client):
     return token
 
 
-def test_create_user(client, token):
+def test_create_user(client, token, data_access_layer, monkeypatch, mocker):
+    dal = mocker.Mock()
+    dal.return_value = data_access_layer
+    monkeypatch.setattr('presentation.app._get_data_access_layer', dal)
     response = client.post(
         "/user", headers=get_admin_headers(token), json={"username": "newuser"}
     )
@@ -49,4 +61,19 @@ def test_create_election(client, token):
         headers=get_admin_headers(token),
         json={"electionName": "city council 2021"},
     )
+    assert response.status_code == 200
+
+
+def test_add_candidate_to_election(client, token, data_access_layer, mocker, monkeypatch):
+    dal = mocker.Mock()
+    dal.return_value = data_access_layer
+    monkeypatch.setattr('presentation.app._get_data_access_layer', dal)
+    election_id = dal().create_election("city council 2021")
+
+    response = client.post(
+        "election/candidate",
+        headers=get_admin_headers(token),
+        json={"candidateId": 12345, "electionId": election_id}
+    )
+
     assert response.status_code == 200

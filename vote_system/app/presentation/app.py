@@ -25,28 +25,11 @@ from . import views # noqa This is necessary for routes outside of this file, af
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     logger.warning("Using mocked up data access layer - you are OFFLINE!!!")
-    from unittest.mock import Mock
-
-    dal = Mock(spec=AbstractDataAccessLayer)
-    dal.create_user.return_value = 3456
-    dal.cast_vote.return_value = 1234
-    dal.create_candidate.return_value = 83445
-    dal.create_election.return_value = 972
-    dal.get_user_info_by_name.return_value = {
-        "id": 1,
-        "username": "test",
-        "phone_number": "555-555-5555",
-        "email": "fake@fake.com",
-        "type": "admin",
-    }
-    dal.get_user_info_by_id.return_value = {
-        "id": 1,
-        "username": "test",
-        "phone_number": "555-555-5555",
-        "email": "fake@fake.com",
-        "type": "admin",
-    }
-    return dal
+    from mongomock import MongoClient
+    import db_implementation
+    db = db_implementation.MongoDbApi(MongoClient())
+    db.create_user('test', 'test')
+    return db
 
 
 def _get_api_factory(user_id: int):
@@ -115,7 +98,7 @@ def create_user():
 
     current_user_id = get_jwt_identity()
     admin_api = _get_api_factory(user_id=current_user_id).create_admin_api()
-    newly_create_user_id = admin_api.create_user(username=request.json["username"])
+    newly_create_user_id = admin_api.create_user(username=request.json["username"], password=request.json.get("password"))
     user_info = _get_data_access_layer().get_user_info_by_id(newly_create_user_id)
     return jsonify(
         {
@@ -134,16 +117,33 @@ def create_election():
     return jsonify({"electionId": election_id})
 
 
+@app.route("/election", methods=["GET"])
+def get_election():
+    basic_api = _get_api_factory(None).create_basic_api()
+    return jsonify(
+        basic_api.get_election(request.json["electionId"])
+    )
+
+@app.route("/election/candidate", methods=["POST"])
+@jwt_required()
+def add_candidate_to_election():
+    admin_api = _get_api_factory(None).create_admin_api()
+    return jsonify(
+        admin_api.add_candidate_to_election(
+            election_id=request.json["electionId"],
+            candidate_id=request.json["candidateId"]
+    ))
+
 @app.route("/vote", methods=["POST"])
 @jwt_required()
 def create_vote():
     voter_api = _get_api_factory(None).create_voter_api()
-    newly_create_user_id = voter_api.cast_vote(
+    new_vote_id = voter_api.cast_vote(
         user_id=request.json["userId"],
         election_id=request.json["electionId"],
         ranked_candidate_list=request.json["rankedCandidateList"],
     )
-    return jsonify({"userId": newly_create_user_id})
+    return jsonify({"userId": new_vote_id})
 
 
 @app.route("/candidate", methods=["POST"])

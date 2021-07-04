@@ -12,8 +12,9 @@ class VoterApi(BaseApi):
         Return:
             ID of the vote generated
         """
-        return self._dal.cast_vote(
+        vote_id = self._dal.cast_vote(
             user_id=user_id,
             election_id=election_id,
             ranked_candidate_list=ranked_candidate_list,
         )
+        return  str(vote_id)
