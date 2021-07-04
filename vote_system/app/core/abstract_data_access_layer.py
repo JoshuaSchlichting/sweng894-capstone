@@ -62,6 +62,10 @@ class AbstractDataAccessLayer(ABC):
         Return:
             id of the newly created election
         """
+    
+    @abstractmethod
+    def add_candidate_to_election(self, election_id: str, candidate_id: str) -> dict:
+        """Adds the candidate to the specified election"""
 
     @abstractmethod
     def get_election(self, id: int) -> dict:
