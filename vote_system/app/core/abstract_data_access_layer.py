@@ -52,7 +52,7 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def create_election(self, election_name: str, candidate_list: List[int]) -> int:
+    def create_election(self, election_name: str) -> int:
         """Creates a new election in the system.
 
         Args:
