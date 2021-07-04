@@ -50,7 +50,9 @@ class MongoDbApi(AbstractDataAccessLayer):
         return election
 
     def get_election(self, id: int) -> dict:
-        return self._db.elections.find_one({"_id": ObjectId(id)})
+        election = self._db.elections.find_one({"_id": ObjectId(id)})
+        self._replace_id_with_str(election)
+        return election
     
     def get_user_info_by_id(self, user_id: int) -> dict:
         users_collection = self._db.users
