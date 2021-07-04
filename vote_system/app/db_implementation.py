@@ -42,7 +42,13 @@ class MongoDbApi(AbstractDataAccessLayer):
         return self._db.elections.find_one({"_id": ObjectId(id)})
     
     def get_user_info_by_id(self, user_id: int) -> dict:
-        return super().get_user_info_by_id()
+        users_collection = self._db.users
+        user_info = users_collection.find_one({"_id": ObjectId(user_id)})
+        if user_info:
+            self._replace_id_with_str(user_info)
+        else:
+            raise UserNotFoundError(f"Database returned NULL when querying user '{user_id}'")
+        return user_info
     
     def get_user_info_by_name(self, username: str) -> dict:
         user_info = self._db.users.find_one({"username": username})
