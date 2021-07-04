@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 from bson.objectid import ObjectId
 
 from core.abstract_data_access_layer import AbstractDataAccessLayer
@@ -37,6 +37,17 @@ class MongoDbApi(AbstractDataAccessLayer):
     def create_election(self, election_name: str) -> int:
         id = self._db.elections.insert_one({"election_name": election_name}).inserted_id
         return str(id)
+    
+    def add_candidate_to_election(self, election_id: str, candidate_id: str) -> dict:
+        elections = self._db.elections
+        election = elections.find_one_and_update(
+            {"_id": ObjectId(election_id)},
+            {'$push': {"candidates": candidate_id}},
+            upsert=True,
+            return_document=ReturnDocument.AFTER
+        )
+        self._replace_id_with_str(election)
+        return election
 
     def get_election(self, id: int) -> dict:
         return self._db.elections.find_one({"_id": ObjectId(id)})
