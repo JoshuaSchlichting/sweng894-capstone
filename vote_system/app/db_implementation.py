@@ -34,8 +34,8 @@ class MongoDbApi(AbstractDataAccessLayer):
         ).get("_id")
         return str(id)
     
-    def create_election(self, election_name: str, candidate_list: List[int]) -> int:
-        id = self._db.elections.insert_one({"election_name": election_name, "candidate_list": candidate_list}).inserted_id
+    def create_election(self, election_name: str) -> int:
+        id = self._db.elections.insert_one({"election_name": election_name}).inserted_id
         return str(id)
 
     def get_election(self, id: int) -> dict:
