@@ -116,6 +116,14 @@ def create_election():
     election_id = admin_api.create_election(election_name=request.json["electionName"])
     return jsonify({"electionId": election_id})
 
+
+@app.route("/election", methods=["GET"])
+def get_election():
+    basic_api = _get_api_factory(None).create_basic_api()
+    return jsonify(
+        basic_api.get_election(request.json["electionId"])
+    )
+
 @app.route("/election/candidate", methods=["POST"])
 @jwt_required()
 def add_candidate_to_election():
