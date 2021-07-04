@@ -62,15 +62,12 @@ def test_create_user(sud):
 
 def test_create_election(sud):
 
-    # arrange
-    candidate_list = [51235, 552346, 6123, 4123, 41234]
 
     # act
-    election_id = sud.create_election("city council", candidate_list) 
+    election_id = sud.create_election("city council")
     election = sud.get_election(election_id)
 
     # assert
-    assert election["candidate_list"] == candidate_list
     assert type(election_id) is str
 
 
