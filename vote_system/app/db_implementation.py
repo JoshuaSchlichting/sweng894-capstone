@@ -62,6 +62,19 @@ class MongoDbApi(AbstractDataAccessLayer):
         user_info = self._db.users.find_one({"username": username, "password": password})
         return True if user_info else False
  
+    def _replace_id_with_str(self, mongo_object: dict):
+        """Replaces the mongo _id with a string value named 'id'
+
+        Arguments:
+            mongo_object: dict - This is a dictionary expected to contain an
+              instance of a MongoDB ObjectId with the key "_id"
+
+        Return:
+            None - Python dictionaries are mutable, just like lists. With that, this
+                   method returns nothing, while modifying the mongo_object passed in.
+        """
+        mongo_object["id"] = str(mongo_object.pop("_id"))
+ 
 def create_mongo_api(host: str, port: int, username: str=None, password: str=None) -> MongoDbApi:
     client = MongoClient(host=host, port=port, username=username, password=password)
     return MongoDbApi(mongo_client=client)
