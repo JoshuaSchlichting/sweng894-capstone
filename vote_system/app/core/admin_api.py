@@ -26,6 +26,10 @@ class AdminApi(BaseApi):
         """
         return self._dal.create_election(election_name=election_name)
 
+    def add_candidate_to_election(self, election_id: str, candidate_id: str) -> dict:
+        """Adds candidate to an election, returning the election information"""
+        return self._dal.add_candidate_to_election(election_id=election_id, candidate_id=candidate_id)
+
     def declare_winner(election_id: int) -> int:
         """Prematurely ends election
 
