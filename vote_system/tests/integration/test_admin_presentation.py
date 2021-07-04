@@ -62,3 +62,18 @@ def test_create_election(client, token):
         json={"electionName": "city council 2021"},
     )
     assert response.status_code == 200
+
+
+def test_add_candidate_to_election(client, token, data_access_layer, mocker, monkeypatch):
+    dal = mocker.Mock()
+    dal.return_value = data_access_layer
+    monkeypatch.setattr('presentation.app._get_data_access_layer', dal)
+    election_id = dal().create_election("city council 2021")
+
+    response = client.post(
+        "election/candidate",
+        headers=get_admin_headers(token),
+        json={"candidateId": 12345, "electionId": election_id}
+    )
+
+    assert response.status_code == 200
