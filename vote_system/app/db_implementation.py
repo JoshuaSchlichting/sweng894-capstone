@@ -61,7 +61,7 @@ class MongoDbApi(AbstractDataAccessLayer):
     def get_user_is_valid(self, username: str, password: str) -> bool:
         user_info = self._db.users.find_one({"username": username, "password": password})
         return True if user_info else False
- 
+
     def _replace_id_with_str(self, mongo_object: dict):
         """Replaces the mongo _id with a string value named 'id'
 
