@@ -53,7 +53,7 @@ class MongoDbApi(AbstractDataAccessLayer):
     def get_user_info_by_name(self, username: str) -> dict:
         user_info = self._db.users.find_one({"username": username})
         if user_info:
-            user_info["id"] = str(user_info.pop("_id"))
+            self._replace_id_with_str(user_info)
         else:
             raise UserNotFoundError(f"Database returned NULL when searching for '{username}'")
         return user_info
