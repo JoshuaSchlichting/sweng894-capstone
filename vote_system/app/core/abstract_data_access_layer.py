@@ -79,6 +79,10 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
+    def get_all_elections(self) -> list:
+        """Retrieves a list of all elections"""
+
+    @abstractmethod
     def get_user_info_by_id(self, user_id: int) -> dict:
         """Retrieves user data from database using the user id"""
 
