@@ -124,6 +124,7 @@ def get_all_elections():
         basic_api.get_all_elections()
     )
 
+
 @app.route("/election", methods=["GET"])
 def get_election():
     basic_api = _get_api_factory(None).create_basic_api()
