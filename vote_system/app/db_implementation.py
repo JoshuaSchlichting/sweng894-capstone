@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 
 from pymongo import MongoClient, ReturnDocument
@@ -34,8 +35,8 @@ class MongoDbApi(AbstractDataAccessLayer):
         ).get("_id")
         return str(id)
     
-    def create_election(self, election_name: str) -> int:
-        id = self._db.elections.insert_one({"election_name": election_name}).inserted_id
+    def create_election(self, election_name: str, start_date: datetime, end_date: datetime) -> int:
+        id = self._db.elections.insert_one({"election_name": election_name, "start_date": start_date, "end_date": end_date}).inserted_id
         return str(id)
 
     def get_all_elections(self) -> list:
