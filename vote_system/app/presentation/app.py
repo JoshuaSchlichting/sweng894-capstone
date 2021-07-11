@@ -8,7 +8,10 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+from flask_jwt_extended.utils import get_jwt_header
+from flask_jwt_extended.view_decorators import verify_jwt_in_request
 from loguru import logger
+from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from core import ApiFactory
@@ -25,7 +28,7 @@ from . import views # noqa This is necessary for routes outside of this file, af
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     logger.warning("Using mocked up data access layer - you are OFFLINE!!!")
-    from mongomock import MongoClient
+    # from mongomock import MongoClient
     import db_implementation
     db = db_implementation.MongoDbApi(MongoClient())
     db.create_user('test', 'test')
@@ -112,8 +115,15 @@ def create_user():
 @app.route("/election", methods=["POST"])
 @jwt_required()
 def create_election():
-    admin_api = _get_api_factory(None).create_admin_api()
-    election_id = admin_api.create_election(election_name=request.json["electionName"])
+    header = get_jwt_header()
+    logger.debug("HEADER" + str(header))
+    logger.debug(request.json)
+    admin_api = _get_api_factory(get_jwt_identity()).create_admin_api()
+    election_id = admin_api.create_election(
+        election_name=request.json.get("electionName"),
+        start_date=request.json.get("startDate"),
+        end_date=request.json.get("endDate"),
+    )
     return jsonify({"electionId": election_id})
 
 
