@@ -18,8 +18,10 @@ def client():
 
 @pytest.fixture
 def data_access_layer():
-    from mongomock import MongoClient
+    # from mongomock import MongoClient
+    from pymongo import MongoClient
     import db_implementation
+
     db = db_implementation.MongoDbApi(MongoClient())
     db.create_user('test', 'test')
     return db
