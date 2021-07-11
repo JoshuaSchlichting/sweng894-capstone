@@ -59,7 +59,11 @@ def test_create_election(client, token):
     response = client.post(
         "/election",
         headers=get_admin_headers(token),
-        json={"electionName": "city council 2021", "startDate": "2021-01-01", "endDate": "2021-01-01"}
+        json={
+            "electionName": "city council 2021",
+            "startDate": "2021-01-01",
+            "endDate": "2021-01-01"
+        }
     )
     assert response.status_code == 200
 
