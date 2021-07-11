@@ -7,9 +7,11 @@ from presentation.app import app
 def data_access_layer():
     from mongomock import MongoClient
     import db_implementation
+
     db = db_implementation.MongoDbApi(MongoClient())
-    db.create_user('test', 'test')
+    db.create_user("test", "test")
     return db
+
 
 @pytest.fixture
 def client():
@@ -37,10 +39,7 @@ def test_index_loads(client):
 def test_get_election_returns_election(client, mocker, monkeypatch, data_access_layer):
     dal = mocker.Mock()
     dal.return_value = data_access_layer
-    monkeypatch.setattr('presentation.app._get_data_access_layer', dal)
+    monkeypatch.setattr("presentation.app._get_data_access_layer", dal)
     election_id = dal().create_election("city council 2021", "2021-01-01", "2021-02-02")
-    response = client.get(
-        "/election",
-        json={"electionId": election_id}
-    )
+    response = client.get("/election", json={"electionId": election_id})
     assert response.status_code == 200

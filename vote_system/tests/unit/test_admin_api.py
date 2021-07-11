@@ -46,7 +46,7 @@ def test_create_election(api):
     election_id = api.create_election(
         election_name="City Council Election",
         start_date="2021-01-01",
-        end_date="2021-01-02"
+        end_date="2021-01-02",
     )
 
     # assert

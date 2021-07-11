@@ -10,21 +10,26 @@ class User:
     phone_number: str
     email_address: str
 
+
 @dataclass
 class Admin:
     pass
 
+
 @dataclass
 class Candidate(User):
     party: str
+
 
 @dataclass
 class Voter(User):
     party: str
 
+
 @dataclass
 class Candidate(User):
     party: str
+
 
 @dataclass
 class Vote:
@@ -32,6 +37,7 @@ class Vote:
     cast_by: int
     ranked_candidates_list: List[int]
     timestamp_utc: datetime
+
 
 @dataclass
 class Election:

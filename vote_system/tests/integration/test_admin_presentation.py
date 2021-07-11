@@ -23,7 +23,7 @@ def data_access_layer():
     import db_implementation
 
     db = db_implementation.MongoDbApi(MongoClient())
-    db.create_user('test', 'test')
+    db.create_user("test", "test")
     return db
 
 
@@ -41,7 +41,7 @@ def token(client):
 def test_create_user(client, token, data_access_layer, monkeypatch, mocker):
     dal = mocker.Mock()
     dal.return_value = data_access_layer
-    monkeypatch.setattr('presentation.app._get_data_access_layer', dal)
+    monkeypatch.setattr("presentation.app._get_data_access_layer", dal)
     response = client.post(
         "/user", headers=get_admin_headers(token), json={"username": "newuser"}
     )
@@ -64,22 +64,24 @@ def test_create_election(client, token):
         json={
             "electionName": "city council 2021",
             "startDate": "2021-01-01",
-            "endDate": "2021-01-01"
-        }
+            "endDate": "2021-01-01",
+        },
     )
     assert response.status_code == 200
 
 
-def test_add_candidate_to_election(client, token, data_access_layer, mocker, monkeypatch):
+def test_add_candidate_to_election(
+    client, token, data_access_layer, mocker, monkeypatch
+):
     dal = mocker.Mock()
     dal.return_value = data_access_layer
-    monkeypatch.setattr('presentation.app._get_data_access_layer', dal)
+    monkeypatch.setattr("presentation.app._get_data_access_layer", dal)
     election_id = dal().create_election("city council 2021", "2021-01-01", "2021-02-01")
 
     response = client.post(
         "election/candidate",
         headers=get_admin_headers(token),
-        json={"candidateId": 12345, "electionId": election_id}
+        json={"candidateId": 12345, "electionId": election_id},
     )
 
     assert response.status_code == 200

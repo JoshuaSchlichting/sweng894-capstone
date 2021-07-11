@@ -1,4 +1,3 @@
-
 import pytest
 from mongomock import MongoClient
 from loguru import logger
@@ -23,7 +22,7 @@ def test_cast_vote(sud):
     new_vote_id = sud.cast_vote(
         user_id=user_id,
         election_id=election_id,
-        ranked_candidate_list=ranked_candidate_list
+        ranked_candidate_list=ranked_candidate_list,
     )
 
     new_vote_data = sud.get_vote(new_vote_id)
@@ -61,7 +60,6 @@ def test_create_user(sud):
 
 
 def test_create_election(sud):
-
 
     # act
     election_id = sud.create_election("city council", "2021-01-01", "2021-02-02")

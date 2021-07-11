@@ -5,6 +5,7 @@ from flask_jwt_extended.view_decorators import jwt_required
 
 from main import app
 
+
 @app.route("/index.html")
 @app.route("/index")
 @app.route("/")

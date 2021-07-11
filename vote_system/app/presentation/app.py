@@ -1,9 +1,4 @@
-from flask import (
-    Flask,
-    request,
-    jsonify,
-    make_response
-)
+from flask import Flask, request, jsonify, make_response
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -23,15 +18,18 @@ SECRET_KEY = "change this for production"
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
 jwt = JWTManager(app)
-from . import views # noqa This is necessary for routes outside of this file, after app is created.
+from . import (
+    views,
+)  # noqa This is necessary for routes outside of this file, after app is created.
 
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     logger.warning("Using mocked up data access layer - you are OFFLINE!!!")
     # from mongomock import MongoClient
     import db_implementation
+
     db = db_implementation.MongoDbApi(MongoClient())
-    db.create_user('test', 'test')
+    db.create_user("test", "test")
     return db
 
 
@@ -101,7 +99,9 @@ def create_user():
 
     current_user_id = get_jwt_identity()
     admin_api = _get_api_factory(user_id=current_user_id).create_admin_api()
-    newly_create_user_id = admin_api.create_user(username=request.json["username"], password=request.json.get("password"))
+    newly_create_user_id = admin_api.create_user(
+        username=request.json["username"], password=request.json.get("password")
+    )
     user_info = _get_data_access_layer().get_user_info_by_id(newly_create_user_id)
     return jsonify(
         {
@@ -130,17 +130,14 @@ def create_election():
 @app.route("/election/all", methods=["GET"])
 def get_all_elections():
     basic_api = _get_api_factory(None).create_basic_api()
-    return jsonify(
-        basic_api.get_all_elections()
-    )
+    return jsonify(basic_api.get_all_elections())
 
 
 @app.route("/election", methods=["GET"])
 def get_election():
     basic_api = _get_api_factory(None).create_basic_api()
-    return jsonify(
-        basic_api.get_election(request.json["electionId"])
-    )
+    return jsonify(basic_api.get_election(request.json["electionId"]))
+
 
 @app.route("/election/candidate", methods=["POST"])
 @jwt_required()
@@ -149,8 +146,10 @@ def add_candidate_to_election():
     return jsonify(
         admin_api.add_candidate_to_election(
             election_id=request.json["electionId"],
-            candidate_id=request.json["candidateId"]
-    ))
+            candidate_id=request.json["candidateId"],
+        )
+    )
+
 
 @app.route("/vote", methods=["POST"])
 @jwt_required()
@@ -170,5 +169,3 @@ def create_candidate():
     admin_api = _get_api_factory(None).create_admin_api()
     newly_create_user_id = admin_api.create_user(username=request.json["username"])
     return jsonify({"userId": newly_create_user_id})
-
-

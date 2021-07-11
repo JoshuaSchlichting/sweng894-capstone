@@ -5,7 +5,7 @@ from .base_api import BaseApi
 
 
 class AdminApi(BaseApi):
-    def create_user(self, username: str, password: Optional[str]=None) -> int:
+    def create_user(self, username: str, password: Optional[str] = None) -> int:
         """Create new user and return new user's ID"""
         return self._dal.create_user(username=username, password=password)
 
@@ -19,7 +19,9 @@ class AdminApi(BaseApi):
         """
         return self._dal.create_candidate(username=username)
 
-    def create_election(self, election_name: str, start_date: str, end_date: str) -> int:
+    def create_election(
+        self, election_name: str, start_date: str, end_date: str
+    ) -> int:
         """Creates a new election
 
         Return:
@@ -28,12 +30,14 @@ class AdminApi(BaseApi):
         return self._dal.create_election(
             election_name=election_name,
             start_date=datetime.strptime(start_date, "%Y-%m-%d"),
-            end_date=datetime.strptime(end_date, "%Y-%m-%d")
-            )
+            end_date=datetime.strptime(end_date, "%Y-%m-%d"),
+        )
 
     def add_candidate_to_election(self, election_id: str, candidate_id: str) -> dict:
         """Adds candidate to an election, returning the election information"""
-        return self._dal.add_candidate_to_election(election_id=election_id, candidate_id=candidate_id)
+        return self._dal.add_candidate_to_election(
+            election_id=election_id, candidate_id=candidate_id
+        )
 
     def declare_winner(election_id: int) -> int:
         """Prematurely ends election

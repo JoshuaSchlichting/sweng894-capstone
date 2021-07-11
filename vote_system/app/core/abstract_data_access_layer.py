@@ -5,7 +5,7 @@ from typing import List, Optional
 
 class AbstractDataAccessLayer(ABC):
     @abstractmethod
-    def create_user(self, username: str, password: Optional[str]=None) -> int:
+    def create_user(self, username: str, password: Optional[str] = None) -> int:
         """Creates new user
         Args:
             username: name of user to create
@@ -15,10 +15,7 @@ class AbstractDataAccessLayer(ABC):
 
     @abstractmethod
     def cast_vote(
-        self,
-        user_id: int,
-        election_id: int,
-        ranked_candidate_list: List[int]
+        self, user_id: int, election_id: int, ranked_candidate_list: List[int]
     ) -> int:
         """Creates a new vote in the database
 
@@ -53,7 +50,9 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def create_election(self, election_name: str, start_date: datetime, end_date: datetime) -> int:
+    def create_election(
+        self, election_name: str, start_date: datetime, end_date: datetime
+    ) -> int:
         """Creates a new election in the system.
 
         Args:
@@ -63,7 +62,7 @@ class AbstractDataAccessLayer(ABC):
         Return:
             id of the newly created election
         """
-    
+
     @abstractmethod
     def add_candidate_to_election(self, election_id: str, candidate_id: str) -> dict:
         """Adds the candidate to the specified election"""
@@ -71,10 +70,10 @@ class AbstractDataAccessLayer(ABC):
     @abstractmethod
     def get_election(self, id: int) -> dict:
         """Retrieves an election object
-        
+
         Args:
             id: ID of the election
-        
+
         Returns:
             dict of election data
         """

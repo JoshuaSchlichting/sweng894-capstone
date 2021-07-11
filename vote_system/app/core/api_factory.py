@@ -30,7 +30,7 @@ class ApiFactory:
         return UserApi(
             user_id=self._user_id, data_access_layer=self._dal, logger=self._log
         )
-    
+
     def create_basic_api(self) -> BasicApi:
         return BasicApi(
             user_id=self._user_id, data_access_layer=self._dal, logger=self._log

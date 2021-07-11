@@ -9,9 +9,9 @@ from core.models import Candidate
 from core.models import Election
 
 
-MOCK_USER_ID = '14234'
-MOCK_ELECTION_ID = '1741'
-MOCK_NEW_VOTE_ID = '5125'
+MOCK_USER_ID = "14234"
+MOCK_ELECTION_ID = "1741"
+MOCK_NEW_VOTE_ID = "5125"
 
 
 @pytest.fixture
