@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from .base_api import BaseApi
@@ -18,13 +19,17 @@ class AdminApi(BaseApi):
         """
         return self._dal.create_candidate(username=username)
 
-    def create_election(self, election_name: str) -> int:
+    def create_election(self, election_name: str, start_date: str, end_date: str) -> int:
         """Creates a new election
 
         Return:
             id of newly created election
         """
-        return self._dal.create_election(election_name=election_name)
+        return self._dal.create_election(
+            election_name=election_name,
+            start_date=datetime.strptime(start_date, "%Y-%m-%d"),
+            end_date=datetime.strptime(end_date, "%Y-%m-%d")
+            )
 
     def add_candidate_to_election(self, election_id: str, candidate_id: str) -> dict:
         """Adds candidate to an election, returning the election information"""
