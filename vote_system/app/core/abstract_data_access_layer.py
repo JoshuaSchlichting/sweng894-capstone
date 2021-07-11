@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import List, Optional
 
 
@@ -52,7 +53,7 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
-    def create_election(self, election_name: str) -> int:
+    def create_election(self, election_name: str, start_date: datetime, end_date: datetime) -> int:
         """Creates a new election in the system.
 
         Args:
