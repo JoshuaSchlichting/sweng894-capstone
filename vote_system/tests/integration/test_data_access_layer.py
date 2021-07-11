@@ -64,7 +64,7 @@ def test_create_election(sud):
 
 
     # act
-    election_id = sud.create_election("city council")
+    election_id = sud.create_election("city council", "2021-01-01", "2021-02-02")
     election = sud.get_election(election_id)
 
     # assert

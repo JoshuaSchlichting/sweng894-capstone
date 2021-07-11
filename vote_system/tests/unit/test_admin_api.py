@@ -43,7 +43,11 @@ def test_create_candidate(api):
 
 def test_create_election(api):
     # act
-    election_id = api.create_election(election_name="City Council Election")
+    election_id = api.create_election(
+        election_name="City Council Election",
+        start_date="2021-01-01",
+        end_date="2021-01-02"
+    )
 
     # assert
     assert election_id == MOCK_NEW_ELECTION_ID
