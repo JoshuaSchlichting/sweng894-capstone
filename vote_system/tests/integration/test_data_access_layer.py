@@ -43,7 +43,7 @@ def test_create_candidate_from_existing_user(sud):
     username = "John Doe"
 
     # arrange
-    user_id = sud.create_user(username=username, password="pass")
+    user_id = sud.create_user(username=username, password="pass", user_type="standard")
 
     # convert this user into a candidate
     candidate_id = sud.create_candidate(username)
@@ -54,7 +54,7 @@ def test_create_candidate_from_existing_user(sud):
 
 def test_create_user(sud):
     username = "test user"
-    user_id = sud.create_user(username)
+    user_id = sud.create_user(username=username, user_type="standard")
     user_info = sud.get_user_info_by_name(username)
     assert str(user_info["id"]) == user_id
 
@@ -71,5 +71,5 @@ def test_create_election(sud):
 
 def test_get_user_is_valid(sud):
     assert sud.get_user_is_valid(username="test", password="testpassword") is False
-    sud.create_user("test", "testpassword")
+    sud.create_user(username="test", password="testpassword", user_type="standard")
     assert sud.get_user_is_valid(username="test", password="testpassword") is True

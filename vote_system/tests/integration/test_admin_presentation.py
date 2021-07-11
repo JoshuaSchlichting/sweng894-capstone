@@ -43,7 +43,7 @@ def test_create_user(client, token, data_access_layer, monkeypatch, mocker):
     dal.return_value = data_access_layer
     monkeypatch.setattr("presentation.app._get_data_access_layer", dal)
     response = client.post(
-        "/user", headers=get_admin_headers(token), json={"username": "newuser"}
+        "/user", headers=get_admin_headers(token), json={"username": "new admin", "userType": "admin"}
     )
     assert response.status_code == 200
 

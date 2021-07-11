@@ -16,9 +16,9 @@ class MongoDbApi(AbstractDataAccessLayer):
         self._mongo_client = mongo_client
         self._db = self._mongo_client.vote_system
 
-    def create_user(self, username: str, password: Optional[str] = None) -> str:
+    def create_user(self, username: str, user_type: str, password: Optional[str] = None) -> str:
         id = self._db.users.insert_one(
-            {"username": username, "password": password, "type": "standard_account"}
+            {"username": username, "password": password, "user_type": user_type}
         ).inserted_id
         return str(id)
 
