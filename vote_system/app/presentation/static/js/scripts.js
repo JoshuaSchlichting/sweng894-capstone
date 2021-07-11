@@ -26,7 +26,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 function getJwtHeader(){
-    return 'Bearer: ' + localStorage.getItem('jwt');
+    return 'Bearer '.concat(localStorage.getItem('jwt'));
 }
 
 function parseJwt (token) {
