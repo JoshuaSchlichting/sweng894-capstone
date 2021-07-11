@@ -117,7 +117,7 @@ def create_election():
     return jsonify({"electionId": election_id})
 
 
-@app.route("election/all", methods=["GET"])
+@app.route("/election/all", methods=["GET"])
 def get_all_elections():
     basic_api = _get_api_factory(None).create_basic_api()
     return jsonify(
