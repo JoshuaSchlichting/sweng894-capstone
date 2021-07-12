@@ -37,8 +37,10 @@
           "endDate": document.getElementById('inputEndDate').value
         }),
         success: function(data){
-          alert("Candidate added to election ID: " + data.electionId);
-          document.getElementById("createElectionForm").reset();
+          alert("Election successfully created!!! Election ID: " + data.electionId);
+          document.getElementById('inputElectionName').value = "";
+          document.getElementById('inputStartDate').value = "";
+          document.getElementById('inputEndDate').value = "";
         }
       });
     });
