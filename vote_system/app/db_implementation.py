@@ -60,7 +60,7 @@ class MongoDbApi(AbstractDataAccessLayer):
     def get_all_elections(self) -> list:
         elections = self._db.elections
         election_objects = list(elections.find({}))
-        for index in range(elections.count()):
+        for index in range(elections.count_documents({})):
             self._replace_id_with_str(election_objects[index])
         return election_objects
 
