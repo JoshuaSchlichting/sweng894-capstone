@@ -45,7 +45,10 @@ def test_get_election_returns_election(client, mocker, monkeypatch, data_access_
     response = client.get("/election", json={"electionId": election_id})
     assert response.status_code == 200
 
-def test_get_all_elections_returns_elections(client, mocker, monkeypatch, data_access_layer):
+
+def test_get_all_elections_returns_elections(
+    client, mocker, monkeypatch, data_access_layer
+):
     dal = mocker.Mock()
     dal.return_value = data_access_layer
     monkeypatch.setattr("presentation.app._get_data_access_layer", dal)

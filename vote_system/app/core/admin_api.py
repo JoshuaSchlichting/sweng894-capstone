@@ -5,9 +5,13 @@ from .base_api import BaseApi
 
 
 class AdminApi(BaseApi):
-    def create_user(self, username: str, user_type: str, password: Optional[str] = None) -> int:
+    def create_user(
+        self, username: str, user_type: str, password: Optional[str] = None
+    ) -> int:
         """Create new user and return new user's ID"""
-        return self._dal.create_user(username=username, password=password, user_type=user_type)
+        return self._dal.create_user(
+            username=username, password=password, user_type=user_type
+        )
 
     def create_candidate(self, username: str) -> int:
         """Adds candidate flag to username
