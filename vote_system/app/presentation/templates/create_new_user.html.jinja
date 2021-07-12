@@ -2,16 +2,22 @@
 
 {% block main %}
 <p>Create a new user:</p>
-<form id="createUserForm" action="/user">
+<form id="createUserForm">
   <div class="form-group">
     <label for="exampleInputUsername">Username</label>
-    <input type="text" class="form-control" name="inputUsername" aria-describedby="usernameHelp" placeholder="Enter username">
+    <input type="text" class="form-control" id="inputUsername" aria-describedby="usernameHelp" placeholder="Enter username">
   </div>
   <div class="form-group">
     <label for="inputPassword">Password</label>
-    <input type="password" class="form-control" name="inputPassword" placeholder="Enter password">
+    <input type="password" class="form-control" id="inputPassword" placeholder="Enter password">
   </div>
-  <button type="submit" class="btn btn-primary">Create new user</button>
+  <input type="radio" id="admin" name="userType" value="CSS">
+  <label for="admin">Admin</label><br>
+  <input type="radio" id="standard" name="userType" value="JavaScript">
+  <label for="standard">Standard</label>
+  <br/>
+  <br/>
+  <button id="submitButton" type="submit" class="btn btn-primary">Create new user</button>
 </form>
 {% endblock %}
 
@@ -21,22 +27,33 @@
 
       e.preventDefault(); // avoid to execute the actual submit of the form.
 
-      var form = $(this);
-      var url = form.attr('action');
+      let form = $(this);
+      let url = form.attr('action');
+      let userType = document.getElementsByName('userType');
 
-      $.ajax({
+      $.ajax("/user", {
         type: "POST",
-        url: url,
-        headers: getJwtHeader(),
-        data: form.serialize(), // serializes the form's elements.
-        success: function(data)
-        {
+        dataType: "json",
+        contentType: "application/json",
+        beforeSend: function(request){
+          request.setRequestHeader("Authorization", getJwtHeader())
+        },
+        data: JSON.stringify({
+          "username": document.getElementById('inputUsername').value,
+          "password": document.getElementById('inputPassword').value,
+          "userType": userType[0].checked ? "admin" : "standard"
+        }),
+        success: function(data){
           if(data){
+              alert(data);
               localStorage.setItem('jwt', data.access_token);
               window.location = "/";
           }else{
               alert("An error occurred while creating the user!!");
           }
+        },
+        error: function(httpObj, textStatus){
+          alert(httpObj.status);
         }
       });
   });
