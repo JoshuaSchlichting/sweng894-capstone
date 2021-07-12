@@ -17,4 +17,4 @@ class VoterApi(BaseApi):
             election_id=election_id,
             ranked_candidate_list=ranked_candidate_list,
         )
-        return  str(vote_id)
+        return str(vote_id)

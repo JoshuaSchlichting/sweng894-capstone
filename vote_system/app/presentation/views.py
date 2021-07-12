@@ -1,8 +1,10 @@
 import os
 
 from flask import render_template, send_from_directory
+from flask_jwt_extended.view_decorators import jwt_required
 
 from main import app
+
 
 @app.route("/index.html")
 @app.route("/index")
@@ -25,6 +27,12 @@ def get_create_new_user_page():
 @app.route("/create_election.html", methods=["GET"])
 def get_create_new_election_page():
     return render_template("create_election.html.jinja")
+
+
+@app.route("/add_candidate_to_election.html", methods=["GET"])
+@jwt_required()
+def get_add_candidate_to_election_page():
+    return render_template("add_candidate_to_election.html.jinja")
 
 
 @app.route("/elections.html", methods=["GET"])
