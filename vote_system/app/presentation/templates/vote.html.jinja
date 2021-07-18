@@ -1,0 +1,64 @@
+{% extends "main.html.jinja" %}
+
+{% block main %}
+  <div id="electionInfo"></div>
+     
+  <div id="candidateTable"></div>
+
+  <button id="submitVoteBtn" class="btn btn-primary">Submit vote</button>
+{% endblock %}
+
+
+{% block javascript %}
+  <link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+  <script type="text/javascript">
+    var candidates = [];
+    var candidateTable = null;
+    var electionId = "{{ election_id }}";
+    var electionName = "{{ election_name }}";
+    $().ready(function(){
+
+      document.getElementById("electionInfo").innerText = "Voting in election: " + electionId;
+
+      $.get({
+        url: "/election/candidate",
+        data: {"electionId": electionId},
+        success: function(data){
+//          let currentCandidates = [];
+//          for(let x = 0; x < data.length; x++){
+ //           currentCandidates.push(data[x]);
+//          }
+          candidateTable = new Tabulator("#candidateTable", {
+            data: data,
+            autoColumns: true,
+            selectable: 1,
+            maxHeight:"40%",
+            movableRows: true
+          });
+        }
+      });
+    });
+
+    $( "#submitVoteBtn" ).click(function(){
+      $.post({
+          url: "/vote",
+          dataType: "json",
+          contentType: "application/json",
+          beforeSend: function(request){
+            request.setRequestHeader("Authorization", getJwtHeader())
+          },
+          data: JSON.stringify({
+              rankedCandidateList: candidateTable.getData(),
+              electionId: electionId
+          }),
+          success: function(data){
+              alert("Your vote has been recorded. Vote ID: " + data.voteId);
+              window.location.href = "/elections.html";
+          }
+      });
+    });
+
+
+  </script>
+{% endblock %}
