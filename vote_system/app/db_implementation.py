@@ -59,6 +59,7 @@ class MongoDbApi(AbstractDataAccessLayer):
                 "election_name": election_name,
                 "start_date": start_date,
                 "end_date": end_date,
+                "candidates": []
             }
         ).inserted_id
         return str(id)
