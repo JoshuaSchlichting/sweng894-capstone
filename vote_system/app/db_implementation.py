@@ -50,6 +50,8 @@ class MongoDbApi(AbstractDataAccessLayer):
     def create_election(
         self, election_name: str, start_date: datetime, end_date: datetime
     ) -> int:
+        if self._db.elections.find_one({"election_name": election_name}):
+            raise Exception(f"Election named '{election_name}' cannot be created because it already exists!!!")
         id = self._db.elections.insert_one(
             {
                 "election_name": election_name,
