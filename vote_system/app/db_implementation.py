@@ -23,7 +23,7 @@ class MongoDbApi(AbstractDataAccessLayer):
         if self._db.users.count_documents({"username": username}) > 0:
             raise Exception(f"User '{username}' already exists!!!")
         id = self._db.users.insert_one(
-            {"username": username, "password": password, "user_type": user_type}
+            {"username": username, "password": password, "user_type": user_type, "isCandidate": is_candidate}
         ).inserted_id
         return str(id)
 
