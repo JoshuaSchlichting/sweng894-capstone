@@ -24,8 +24,6 @@ from . import (
 
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
-    logger.warning("Using mocked up data access layer - you are OFFLINE!!!")
-    # from mongomock import MongoClient
     import db_implementation
 
     db = db_implementation.MongoDbApi(MongoClient())
