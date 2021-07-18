@@ -146,7 +146,7 @@ def get_election():
 @app.route("/election/candidate", methods=["POST"])
 @jwt_required()
 def add_candidate_to_election():
-    admin_api = _get_api_factory(None).create_admin_api()
+    admin_api = _get_api_factory(get_jwt_identity()).create_admin_api()
     return jsonify(
         admin_api.add_candidate_to_election(
             election_id=request.json["electionId"],
