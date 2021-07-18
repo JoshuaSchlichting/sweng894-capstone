@@ -78,7 +78,7 @@ def create_user():
         {
             "userId": newly_create_user_id,
             "username": user_info["username"],
-            "userType": user_info["user_type"],
+            "userType": user_info["user_type"]
         }
     )
 
