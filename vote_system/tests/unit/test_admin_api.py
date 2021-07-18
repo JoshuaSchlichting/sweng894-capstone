@@ -27,7 +27,12 @@ def api(mocker):
 
 def test_create_user(api):
     # act
-    new_user_id = api.create_user("Test User", "test password")
+    new_user_id = api.create_user(
+        username="Test User",
+        user_type="standard",
+        is_candidate=True,
+        password="test password"
+    )
 
     # assert
     assert new_user_id == MOCK_NEW_USER_ID
