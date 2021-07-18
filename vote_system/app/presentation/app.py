@@ -119,12 +119,16 @@ def create_election():
     logger.debug("HEADER" + str(header))
     logger.debug(request.json)
     admin_api = _get_api_factory(get_jwt_identity()).create_admin_api()
-    election_id = admin_api.create_election(
-        election_name=request.json.get("electionName"),
-        start_date=request.json.get("startDate"),
-        end_date=request.json.get("endDate"),
-    )
-    return jsonify({"electionId": election_id})
+    election_id = ""
+    try:
+        election_id = admin_api.create_election(
+            election_name=request.json.get("electionName"),
+            start_date=request.json.get("startDate"),
+            end_date=request.json.get("endDate"),
+        )
+    except Exception as e:
+        return jsonify({"msg": str(e)})
+    return jsonify({"msg": "Election created. ID: " + election_id})
 
 
 @app.route("/election/all", methods=["GET"])
