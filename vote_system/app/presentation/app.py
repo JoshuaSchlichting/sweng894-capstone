@@ -71,6 +71,7 @@ def create_user():
         username=request.json["username"],
         password=request.json.get("password"),
         user_type=request.json["userType"],
+        is_candidate=request.json.get("isCandidate")
     )
     user_info = _get_data_access_layer().get_user_info_by_id(newly_create_user_id)
     return jsonify(
