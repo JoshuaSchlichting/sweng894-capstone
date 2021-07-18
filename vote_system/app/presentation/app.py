@@ -179,3 +179,12 @@ def create_candidate():
     admin_api = _get_api_factory(None).create_admin_api()
     newly_create_user_id = admin_api.create_candidate(username=request.json["username"])
     return jsonify({"userId": newly_create_user_id})
+
+
+@app.route("/candidate/all", methods=["GET"])
+def get_all_candidates():
+    basic_api = _get_api_factory(None).create_basic_api()
+    
+    candidates = basic_api.get_all_candidates()
+
+    return jsonify({"candidates": candidates})
