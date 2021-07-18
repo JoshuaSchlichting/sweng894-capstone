@@ -61,36 +61,6 @@ def login():
     return jsonify(access_token=access_token)
 
 
-# signup route
-@app.route("/signup", methods=["POST"])
-def signup():
-    # creates a dictionary of the form data
-    data = request.form
-
-    # gets name, email and password
-    name, email = data.get("name"), data.get("email")
-    password = data.get("password")
-
-    # checking for existing user
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        # database ORM object
-        user = User(
-            public_id=str(uuid.uuid4()),
-            name=name,
-            email=email,
-            password=generate_password_hash(password),
-        )
-        # insert user
-        db.session.add(user)
-        db.session.commit()
-
-        return make_response("Successfully registered.", 201)
-    else:
-        # returns 202 if user already exists
-        return make_response("User already exists. Please Log in.", 202)
-
-
 @app.route("/user", methods=["POST"])
 @jwt_required()
 def create_user():
