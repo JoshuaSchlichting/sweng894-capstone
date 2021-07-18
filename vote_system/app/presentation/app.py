@@ -45,10 +45,11 @@ def login():
     logger.info(str(request))
     username = request.form.get("inputUsername")
     password = request.form.get("inputPassword")
-    if username != "test" or password != "test":
+    dal = _get_data_access_layer()
+    if not dal.get_user_is_valid(username=username, password=password):
         return jsonify({"msg": "Bad username or password"}), 401
 
-    user_info = _get_data_access_layer().get_user_info_by_name(username)
+    user_info = dal.get_user_info_by_name(username)
 
     access_token = create_access_token(
         identity=user_info["id"],
