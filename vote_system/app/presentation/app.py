@@ -27,7 +27,6 @@ def _get_data_access_layer() -> AbstractDataAccessLayer:
     import db_implementation
 
     db = db_implementation.MongoDbApi(MongoClient())
-    db.create_user("test", password="test", user_type="admin")
     return db
 
 
