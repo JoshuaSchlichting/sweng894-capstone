@@ -30,7 +30,6 @@ def get_create_new_election_page():
 
 
 @app.route("/add_candidate_to_election.html", methods=["GET"])
-@jwt_required()
 def get_add_candidate_to_election_page():
     return render_template("add_candidate_to_election.html.jinja")
 
