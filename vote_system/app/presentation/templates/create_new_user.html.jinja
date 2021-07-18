@@ -46,7 +46,6 @@
         success: function(data){
           if(data){
               alert(data);
-              localStorage.setItem('jwt', data.access_token);
               window.location = "/";
           }else{
               alert("An error occurred while creating the user!!");
