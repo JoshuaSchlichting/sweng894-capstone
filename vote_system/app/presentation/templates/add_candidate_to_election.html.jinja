@@ -20,30 +20,37 @@
 
   var electionTable;
   var candidateTable;
-  var currentElectionCandidateTable;
+  var currentElectionCandidateTable = null;
+  var currentCandidates = [];
 
-
-  function updateCurrentElectionCandidateTable(data){
+  function createCurrentElectionCandidateTable(){
+    if(currentElectionCandidateTable){
+      try{
+        setCurrentCandidatesByElection(currentElectionCandidateTable.getSelectedData()[0].id);
+      }catch(error){
+        console.log(error);
+      }
+    }
     currentElectionCandidateTable = new Tabulator("#currentElectionCandidateTable", {
-      data: data, //assign data to table
+      data: currentCandidates, //assign data to table
       autoColumns: true, //create columns from data field names
       selectable: 1,
       maxHeight:"40%"
     }); 
   }
 
-  function getCandidatesByElection(election_id){
-    return Promise.resolve($.get({
+
+  function setCurrentCandidatesByElection(election_id){
+    $.get({
       url: "election/candidate",
       data: {"electionId": election_id},
       success: function(data){
-        let candidates = [];
+        currentCandidates = [];
         for(let x = 0; x < data.length; x++){
-          candidates.push(data[x]);
+          currentCandidates.push(data[x]);
         }
-        return candidates;
       }
-    }));
+    });
   }
 
 //  $().ready(function(data){
@@ -94,17 +101,36 @@
         "electionId": electionTable.getSelectedData()[0].id,
         "candidateId": candidateTable.getSelectedData()[0].id
       }),
-      success: updateCurrentElectionCandidateTable
+      success: function(){
+        electionTableLoad();
+      }
     });
   });
 
 
-
-  $( "#electionTable" ).click(function(data){
-    let electionId = electionTable.getSelectedData()[0].id;
-    let candidates = getCandidatesByElection(electionId).then(function(result){return result});
-    updateCurrentElectionCandidateTable(getCandidatesByElection(candidates));
+  $().ready(function(){
+    createCurrentElectionCandidateTable();
   });
+
+
+  function electionTableLoad(data){
+    if(electionTable.getSelectedData()[0].id === "undefined") return;
+    let electionId = electionTable.getSelectedData()[0].id;
+    $.get({
+      url: "election/candidate",
+      data: {"electionId": electionId},
+      success: function(data){
+        currentCandidates = [];
+        for(let x = 0; x < data.length; x++){
+          currentCandidates.push(data[x]);
+        }
+        createCurrentElectionCandidateTable();
+      }
+    });
+  }
+
+
+  $( "#electionTable" ).click(electionTableLoad);
 
   </script>
 {% endblock %}
