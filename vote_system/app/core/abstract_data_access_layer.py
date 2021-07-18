@@ -88,3 +88,9 @@ class AbstractDataAccessLayer(ABC):
 
     def get_user_info_by_name(self, username: str) -> dict:
         """Retrieves user data form database using the username"""
+
+    def get_all_candidates(self) -> list:
+        """Returns a list of all candidate users"""
+
+    def get_candidates_by_election(self, election_id: str) -> List[dict]:
+        pass
