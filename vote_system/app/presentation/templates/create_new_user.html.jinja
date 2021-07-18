@@ -17,6 +17,8 @@
   <label for="standard">Standard</label>
   <br/>
   <br/>
+  <input type="checkbox" id="isCandidate">
+  <label>User is a candidate</label><br>
   <button id="submitButton" type="submit" class="btn btn-primary">Create new user</button>
 </form>
 {% endblock %}
@@ -41,7 +43,8 @@
         data: JSON.stringify({
           "username": document.getElementById('inputUsername').value,
           "password": document.getElementById('inputPassword').value,
-          "userType": userType[0].checked ? "admin" : "standard"
+          "userType": userType[0].checked ? "admin" : "standard",
+          "isCandidate": document.getElementById("isCandidate").checked
         }),
         success: function(data){
           if(data){
