@@ -109,6 +109,24 @@ class MongoDbApi(AbstractDataAccessLayer):
         )
         return True if user_info else False
 
+    def get_all_candidates(self) -> list:
+        candidates = list(self._db.users.find({"isCandidate": True}, {"_id": 1, "username": 1}))
+        for candidate in candidates:
+            self._replace_id_with_str(candidate)
+        return candidates
+
+    def get_candidates_by_election(self, election_id: str) -> List[dict]:
+        candidate_id_list = self._db.elections.find_one({}, {"_id": election_id, "candidates": 1})["candidates"]
+        candidates = list(
+            self._db.users.find(
+                {"_id": {"$in": [ObjectId(x) for x in candidate_id_list]}},
+                {"_id": 1, "username": 1}
+            )
+        )
+        for candidate in candidates:
+            self._replace_id_with_str(candidate)
+        return candidates
+
     def _replace_id_with_str(self, mongo_object: dict):
         """Replaces the mongo _id with a string value named 'id'
 
