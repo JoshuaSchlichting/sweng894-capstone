@@ -1,6 +1,7 @@
 {% extends "main.html.jinja" %}
 
 {% block main %}
+<p id="instructions">Please select an election to vote in.</p>
 <div id="electionsTable" style="width:100%">
 </div>
 {% endblock %}
@@ -12,14 +13,30 @@
   {# <script src="{{ url_for('static', filename='js/elections.js') }}"></script> #}
 
   <script type="text/javascript">
-  $().ready(function(e){
-    $.get("/election/all", function(data){
-      var table = new Tabulator("#electionsTable", {
-        data: data, //assign data to table
-        autoColumns: true //create columns from data field names
+    var table = null;
+
+    $().ready(function(e){
+
+      if(getUserName())
+
+      $.get("/election/all", function(data){
+        for(let i = 0; i < data.length; i++){
+          delete data[i]["candidates"];
+        }
+        table = new Tabulator("#electionsTable", {
+          data: data,
+          autoColumns: true,
+          selectable: 1,
+          rowSelected: function(row){
+            window.location.href = '/vote/' + row.getData().id;
+          }
+        });
       });
+
+
+
+
     });
-  });
 
   </script>
 {% endblock %}
