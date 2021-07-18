@@ -6,11 +6,11 @@ from .base_api import BaseApi
 
 class AdminApi(BaseApi):
     def create_user(
-        self, username: str, user_type: str, password: Optional[str] = None
+        self, username: str, user_type: str, password: Optional[str], is_candidate: bool = None
     ) -> int:
         """Create new user and return new user's ID"""
         return self._dal.create_user(
-            username=username, password=password, user_type=user_type
+            username=username, password=password, user_type=user_type, is_candidate=is_candidate
         )
 
     def create_candidate(self, username: str) -> int:
@@ -39,9 +39,10 @@ class AdminApi(BaseApi):
 
     def add_candidate_to_election(self, election_id: str, candidate_id: str) -> dict:
         """Adds candidate to an election, returning the election information"""
-        return self._dal.add_candidate_to_election(
+        self._dal.add_candidate_to_election(
             election_id=election_id, candidate_id=candidate_id
         )
+        return self._dal.get_candidates_by_election(election_id=election_id)
 
     def declare_winner(election_id: int) -> int:
         """Prematurely ends election

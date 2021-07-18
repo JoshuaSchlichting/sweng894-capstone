@@ -5,7 +5,7 @@ from typing import List, Optional
 
 class AbstractDataAccessLayer(ABC):
     @abstractmethod
-    def create_user(self, username: str, password: Optional[str] = None) -> int:
+    def create_user(self, *, username: str, user_type: str, is_candidate: bool, password: Optional[str] = None) -> int:
         """Creates new user
         Args:
             username: name of user to create
@@ -88,3 +88,9 @@ class AbstractDataAccessLayer(ABC):
 
     def get_user_info_by_name(self, username: str) -> dict:
         """Retrieves user data form database using the username"""
+
+    def get_all_candidates(self) -> list:
+        """Returns a list of all candidate users"""
+
+    def get_candidates_by_election(self, election_id: str) -> List[dict]:
+        pass

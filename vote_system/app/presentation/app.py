@@ -24,12 +24,9 @@ from . import (
 
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
-    logger.warning("Using mocked up data access layer - you are OFFLINE!!!")
-    # from mongomock import MongoClient
     import db_implementation
 
-    db = db_implementation.MongoDbApi(MongoClient())
-    db.create_user("test", password="test", user_type="admin")
+    db = db_implementation.MongoDbApi(MongoClient(), logger)
     return db
 
 
@@ -47,10 +44,11 @@ def login():
     logger.info(str(request))
     username = request.form.get("inputUsername")
     password = request.form.get("inputPassword")
-    if username != "test" or password != "test":
+    dal = _get_data_access_layer()
+    if not dal.get_user_is_valid(username=username, password=password):
         return jsonify({"msg": "Bad username or password"}), 401
 
-    user_info = _get_data_access_layer().get_user_info_by_name(username)
+    user_info = dal.get_user_info_by_name(username)
 
     access_token = create_access_token(
         identity=user_info["id"],
@@ -63,36 +61,6 @@ def login():
     return jsonify(access_token=access_token)
 
 
-# signup route
-@app.route("/signup", methods=["POST"])
-def signup():
-    # creates a dictionary of the form data
-    data = request.form
-
-    # gets name, email and password
-    name, email = data.get("name"), data.get("email")
-    password = data.get("password")
-
-    # checking for existing user
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        # database ORM object
-        user = User(
-            public_id=str(uuid.uuid4()),
-            name=name,
-            email=email,
-            password=generate_password_hash(password),
-        )
-        # insert user
-        db.session.add(user)
-        db.session.commit()
-
-        return make_response("Successfully registered.", 201)
-    else:
-        # returns 202 if user already exists
-        return make_response("User already exists. Please Log in.", 202)
-
-
 @app.route("/user", methods=["POST"])
 @jwt_required()
 def create_user():
@@ -103,13 +71,14 @@ def create_user():
         username=request.json["username"],
         password=request.json.get("password"),
         user_type=request.json["userType"],
+        is_candidate=request.json.get("isCandidate")
     )
     user_info = _get_data_access_layer().get_user_info_by_id(newly_create_user_id)
     return jsonify(
         {
             "userId": newly_create_user_id,
             "username": user_info["username"],
-            "userType": user_info["user_type"],
+            "userType": user_info["user_type"]
         }
     )
 
@@ -121,12 +90,16 @@ def create_election():
     logger.debug("HEADER" + str(header))
     logger.debug(request.json)
     admin_api = _get_api_factory(get_jwt_identity()).create_admin_api()
-    election_id = admin_api.create_election(
-        election_name=request.json.get("electionName"),
-        start_date=request.json.get("startDate"),
-        end_date=request.json.get("endDate"),
-    )
-    return jsonify({"electionId": election_id})
+    election_id = ""
+    try:
+        election_id = admin_api.create_election(
+            election_name=request.json.get("electionName"),
+            start_date=request.json.get("startDate"),
+            end_date=request.json.get("endDate"),
+        )
+    except Exception as e:
+        return jsonify({"msg": str(e)})
+    return jsonify({"msg": "Election created. ID: " + election_id})
 
 
 @app.route("/election/all", methods=["GET"])
@@ -144,7 +117,7 @@ def get_election():
 @app.route("/election/candidate", methods=["POST"])
 @jwt_required()
 def add_candidate_to_election():
-    admin_api = _get_api_factory(None).create_admin_api()
+    admin_api = _get_api_factory(get_jwt_identity()).create_admin_api()
     return jsonify(
         admin_api.add_candidate_to_election(
             election_id=request.json["electionId"],
@@ -152,17 +125,23 @@ def add_candidate_to_election():
         )
     )
 
+@app.route("/election/candidate", methods=["GET"])
+def get_candidates_by_election():
+    basic_api = _get_api_factory(None).create_basic_api()
+    return jsonify(
+        basic_api.get_candidates_by_election(election_id=request.args.get("electionId"))
+    )
 
 @app.route("/vote", methods=["POST"])
 @jwt_required()
 def create_vote():
     voter_api = _get_api_factory(None).create_voter_api()
     new_vote_id = voter_api.cast_vote(
-        user_id=request.json["userId"],
+        user_id=get_jwt_identity(),
         election_id=request.json["electionId"],
         ranked_candidate_list=request.json["rankedCandidateList"],
     )
-    return jsonify({"userId": new_vote_id})
+    return jsonify({"voteId": new_vote_id})
 
 
 @app.route("/candidate", methods=["POST"])
@@ -171,3 +150,12 @@ def create_candidate():
     admin_api = _get_api_factory(None).create_admin_api()
     newly_create_user_id = admin_api.create_candidate(username=request.json["username"])
     return jsonify({"userId": newly_create_user_id})
+
+
+@app.route("/candidate/all", methods=["GET"])
+def get_all_candidates():
+    basic_api = _get_api_factory(None).create_basic_api()
+    
+    candidates = basic_api.get_all_candidates()
+
+    return jsonify({"candidates": candidates})

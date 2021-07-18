@@ -1,120 +1,129 @@
 {% extends "main.html.jinja" %}
 
 {% block main %}
+  <p>Select an election</p>
+  <div id="electionTable" style="width:100%"></div>
+  <p>Current candidates in selected election:</p>
+  <div id="currentElectionCandidateTable" style="width:100%"></div>
+
   <p>Add candidate to election</p>
-  <label for="candidatesGrid">Select candidate to participate in election:</label>
-  <div id="candidatesGrid" style="height: 200px; width:500px;" class="ag-theme-alpine"></div>
+  <div id="candidateTable" style="width:100%"></div>
+
+  <button id="addCandidateBtn" class="btn btn-primary">Add candidate</button>
+
 {% endblock %}
 
 {% block javascript %}
-  <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+  <link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
   <script type="text/javascript">
 
-    $("#electionGrid").ready(function(e) {
-      $.ajax({
-        type: "GET",
-        url: "election/all",
-        data: form.serialize(), // serializes the form's elements.
-        success: function(data)
-        {
-            for(let i = 0; i < electionRowData.length; i++){
-                rowData.push(data.candidates[i]);
-            }
+  var electionTable;
+  var candidateTable;
+  var currentElectionCandidateTable = null;
+  var currentCandidates = [];
+
+  function createCurrentElectionCandidateTable(){
+    if(currentElectionCandidateTable){
+      try{
+        setCurrentCandidatesByElection(currentElectionCandidateTable.getSelectedData()[0].id);
+      }catch(error){
+        console.log(error);
+      }
+    }
+    currentElectionCandidateTable = new Tabulator("#currentElectionCandidateTable", {
+      data: currentCandidates, //assign data to table
+      autoColumns: true, //create columns from data field names
+      selectable: 1,
+      maxHeight:"40%"
+    }); 
+  }
+
+
+  function setCurrentCandidatesByElection(election_id){
+    $.get({
+      url: "election/candidate",
+      data: {"electionId": election_id},
+      success: function(data){
+        currentCandidates = [];
+        for(let x = 0; x < data.length; x++){
+          currentCandidates.push(data[x]);
         }
-      });
-    )};
-
-
-    $("#candidatesGrid").ready(function(e) {
-      $.ajax({
-        type: "GET",
-        url: "election",
-        data: form.serialize(), // serializes the form's elements.
-        success: function(data)
-        {
-            alert("Election created! Election ID: " + data.electionId);
-            document.getElementById("createElectionForm").reset();
-            for(let i = 0; i < rowData.length; i++){
-                rowData.push(data.candidates[i]);
-            }
-        }
-      });
-    )};
+      }
+    });
+  }
 
 
 
-    $("#createElectionForm").submit(function(e) {
+  $().ready(function(e){
+    $.get("/election/all", function(data){
 
-      e.preventDefault(); // avoid to execute the actual submit of the form.
-
-      var form = $(this);
-      var url = form.attr('action');
-
-      $.ajax({
-        type: "POST",
-        url: url,
-        headers: getJwtHeader(),
-        data: form.serialize(), // serializes the form's elements.
-        success: function(data)
-        {
-            alert("Election created! Election ID: " + data.electionId);
-            document.getElementById("createElectionForm").reset();
-        }
+      for(let i = 0; i < data.length; i++){
+        delete data[i]["candidates"];
+      }
+      electionTable = new Tabulator("#electionTable", {
+        data: data, //assign data to table
+        autoColumns: true, //create columns from data field names
+        selectable: 1,
+        maxHeight:"40%"
       });
     });
-
-    function CheckboxRenderer() {}
-
-    CheckboxRenderer.prototype.init = function(params) {
-        this.params = params;
-
-        this.eGui = document.createElement('input');
-        this.eGui.type = 'checkbox';
-        this.eGui.checked = params.value;
-
-        this.checkedHandler = this.checkedHandler.bind(this);
-        this.eGui.addEventListener('click', this.checkedHandler);
-    }
-
-    CheckboxRenderer.prototype.checkedHandler = function(e) {
-        let checked = e.target.checked;
-        let colId = this.params.column.colId;
-        this.params.node.setDataValue(colId, checked);
-    }
-
-    CheckboxRenderer.prototype.getGui = function(params) {
-        return this.eGui;
-    }
-
-    CheckboxRenderer.prototype.destroy = function(params) {
-        this.eGui.removeEventListener('click', this.checkedHandler);
-    }
+  });
 
 
-    
-    const columnDefs = [
-        { field: "Candidate" }
-    ];
-
-        // specify the data
-    let candidateRowData = [
-        { Candidate: "Celica" },
-        { Candidate: "test user" }
-    ];
-
-        // let the grid know which columns and what data to use
-    const gridOptions = {
-        columnDefs: columnDefs,
-        rowData: rowData
-    };
-    gridOptions.components = {
-        checkboxRenderer: CheckboxRenderer
-    }
-    // setup the grid after the page has finished loading
-    document.addEventListener('DOMContentLoaded', () => {
-        const gridDiv = document.querySelector('#candidatesGrid');
-        new agGrid.Grid(gridDiv, gridOptions);
+  $().ready(function(e){
+    $.get("/candidate/all", function(data){
+      candidateTable = new Tabulator("#candidateTable", {
+        data: data.candidates, //assign data to table
+        autoColumns: true, //create columns from data field names
+        selectable: 1,
+        maxHeight:"40%"
+      });
     });
+  });
+
+  $("#addCandidateBtn").click(function(){
+    $.post({
+      url: "election/candidate",
+      dataType: "json",
+      contentType: "application/json",
+      beforeSend: function(request){
+        request.setRequestHeader("Authorization", getJwtHeader())
+      },
+      data: JSON.stringify({
+        "electionId": electionTable.getSelectedData()[0].id,
+        "candidateId": candidateTable.getSelectedData()[0].id
+      }),
+      success: function(){
+        electionTableLoad();
+      }
+    });
+  });
+
+
+  $().ready(function(){
+    createCurrentElectionCandidateTable();
+  });
+
+
+  function electionTableLoad(data){
+    if(electionTable.getSelectedData()[0].id === "undefined") return;
+    let electionId = electionTable.getSelectedData()[0].id;
+    $.get({
+      url: "election/candidate",
+      data: {"electionId": electionId},
+      success: function(data){
+        currentCandidates = [];
+        for(let x = 0; x < data.length; x++){
+          currentCandidates.push(data[x]);
+        }
+        createCurrentElectionCandidateTable();
+      }
+    });
+  }
+
+
+  $( "#electionTable" ).click(electionTableLoad);
 
   </script>
 {% endblock %}

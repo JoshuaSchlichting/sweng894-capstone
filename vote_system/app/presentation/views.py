@@ -30,7 +30,6 @@ def get_create_new_election_page():
 
 
 @app.route("/add_candidate_to_election.html", methods=["GET"])
-@jwt_required()
 def get_add_candidate_to_election_page():
     return render_template("add_candidate_to_election.html.jinja")
 
@@ -39,6 +38,9 @@ def get_add_candidate_to_election_page():
 def get_election_view():
     return render_template("elections.html.jinja")
 
+@app.route("/vote/<election_id>", methods=["GET"])
+def get_vote_view(election_id):
+    return render_template("vote.html.jinja", election_id=election_id)
 
 @app.route("/static/js/<path:path>")
 def serve_static_js(path):

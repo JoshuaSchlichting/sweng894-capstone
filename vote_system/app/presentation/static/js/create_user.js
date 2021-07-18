@@ -14,8 +14,7 @@ $("#createUserForm").submit(function(e) {
         headers=getJwtHeader(),
         url: url,
         data: form.serialize(), // serializes the form's elements.
-        success: function(data)
-        {
+        success: function(data){
             localStorage.setItem('jwt', data.access_token);
         }
     });

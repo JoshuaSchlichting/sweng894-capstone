@@ -1,4 +1,5 @@
 import pytest
+from loguru import logger
 
 from presentation.app import app
 
@@ -18,12 +19,17 @@ def client():
 
 @pytest.fixture
 def data_access_layer():
-    # from mongomock import MongoClient
-    from pymongo import MongoClient
+    from mongomock import MongoClient
+    # from pymongo import MongoClient
     import db_implementation
 
-    db = db_implementation.MongoDbApi(MongoClient())
-    db.create_user("test", "test")
+    db = db_implementation.MongoDbApi(MongoClient(), logger=logger)
+    db.create_user(
+        username="test",
+        password="test",
+        is_candidate=False,
+        user_type="admin"
+    )
     return db
 
 
@@ -37,15 +43,19 @@ def token(client):
     token = response.json["access_token"]
     return token
 
-
-def test_create_user(client, token, data_access_layer, monkeypatch, mocker):
+@pytest.fixture(autouse=True)
+def patch_data_access_layer(monkeypatch, mocker, data_access_layer):
     dal = mocker.Mock()
     dal.return_value = data_access_layer
     monkeypatch.setattr("presentation.app._get_data_access_layer", dal)
+
+
+def test_create_user(client, token):
+
     response = client.post(
         "/user",
         headers=get_admin_headers(token),
-        json={"username": "new admin", "userType": "admin"},
+        json={"username": "new admin", "userType": "admin", "isCandidate": "true"},
     )
     assert response.status_code == 200
 
@@ -73,17 +83,14 @@ def test_create_election(client, token):
 
 
 def test_add_candidate_to_election(
-    client, token, data_access_layer, mocker, monkeypatch
+    client, token, data_access_layer,
 ):
-    dal = mocker.Mock()
-    dal.return_value = data_access_layer
-    monkeypatch.setattr("presentation.app._get_data_access_layer", dal)
-    election_id = dal().create_election("city council 2021", "2021-01-01", "2021-02-01")
+    election_id = data_access_layer.create_election("city council 2021", "2021-01-01", "2021-02-01")
 
     response = client.post(
         "election/candidate",
         headers=get_admin_headers(token),
-        json={"candidateId": 12345, "electionId": election_id},
+        json={"candidateId": "60eba2ff9615f8d85509b34f", "electionId": election_id},
     )
 
     assert response.status_code == 200

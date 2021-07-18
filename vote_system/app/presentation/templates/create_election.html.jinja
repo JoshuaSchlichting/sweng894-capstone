@@ -37,10 +37,12 @@
           "endDate": document.getElementById('inputEndDate').value
         }),
         success: function(data){
-          alert("Election successfully created!!! Election ID: " + data.electionId);
-          document.getElementById('inputElectionName').value = "";
-          document.getElementById('inputStartDate').value = "";
-          document.getElementById('inputEndDate').value = "";
+          alert(data.msg);
+          if(data.success){
+            document.getElementById('inputElectionName').value = "";
+            document.getElementById('inputStartDate').value = "";
+            document.getElementById('inputEndDate').value = "";
+          }
         }
       });
     });
