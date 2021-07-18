@@ -53,14 +53,7 @@
     });
   }
 
-//  $().ready(function(data){
-//    $.get({
-//      url: "election/candidate", 
-//      dataType: "json",
-//      data: JSON.stringify({"electionId": electionTable.getSelectedData()[0].id}),
-//      success: updateCurrentElectionCandidateTable
-//    });
-//  });
+
 
   $().ready(function(e){
     $.get("/election/all", function(data){
