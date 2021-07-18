@@ -9,14 +9,16 @@ $("#loginForm").submit(function(e) {
         type: "POST",
         url: url,
         data: form.serialize(), // serializes the form's elements.
-        success: function(data)
-        {
+        success: function(data){
             if(data){
                 localStorage.setItem('jwt', data.access_token);
                 window.location = "/";
             }else{
                 alert("An error occurred while logging in!");
             }
+        },
+        error: function(data){
+            alert("Error: " + data.responseJSON.msg);
         }
     });
 });
