@@ -141,7 +141,7 @@ def create_vote():
         election_id=request.json["electionId"],
         ranked_candidate_list=request.json["rankedCandidateList"],
     )
-    return jsonify({"userId": new_vote_id})
+    return jsonify({"voteId": new_vote_id})
 
 
 @app.route("/candidate", methods=["POST"])
