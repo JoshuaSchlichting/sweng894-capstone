@@ -137,7 +137,7 @@ def get_candidates_by_election():
 def create_vote():
     voter_api = _get_api_factory(None).create_voter_api()
     new_vote_id = voter_api.cast_vote(
-        user_id=request.json["userId"],
+        user_id=get_jwt_identity(),
         election_id=request.json["electionId"],
         ranked_candidate_list=request.json["rankedCandidateList"],
     )
