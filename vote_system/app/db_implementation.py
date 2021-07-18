@@ -12,9 +12,10 @@ class UserNotFoundError(Exception):
 
 
 class MongoDbApi(AbstractDataAccessLayer):
-    def __init__(self, mongo_client: MongoClient) -> None:
+    def __init__(self, mongo_client: MongoClient, logger) -> None:
         self._mongo_client = mongo_client
         self._db = self._mongo_client.vote_system
+        self._log = logger
 
     def create_user(
         self, username: str, user_type: str, password: Optional[str] = None
@@ -121,7 +122,10 @@ class MongoDbApi(AbstractDataAccessLayer):
         return candidates
 
     def get_candidates_by_election(self, election_id: str) -> List[dict]:
-        candidate_id_list = self._db.elections.find_one({}, {"_id": election_id, "candidates": 1})["candidates"]
+        if election_id is None:
+            self._log.warning(f"A call for get_candidates_by_election() passed a null value as the election id!")
+            return
+        candidate_id_list  = self._db.elections.find_one({"_id": ObjectId(election_id), "candidates": {"$exists": True}}, {"candidates": 1})["candidates"]
         candidates = list(
             self._db.users.find(
                 {"_id": {"$in": [ObjectId(x) for x in candidate_id_list]}},
