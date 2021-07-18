@@ -18,7 +18,7 @@ class MongoDbApi(AbstractDataAccessLayer):
         self._log = logger
 
     def create_user(
-        self, username: str, user_type: str, password: Optional[str] = None
+        self, *, username: str, user_type: str, is_candidate: bool, password: Optional[str] = None
     ) -> str:
         if self._db.users.count_documents({"username": username}) > 0:
             raise Exception("User '{username}' already exists!!!")
