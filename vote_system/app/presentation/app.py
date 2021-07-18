@@ -26,7 +26,7 @@ from . import (
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     import db_implementation
 
-    db = db_implementation.MongoDbApi(MongoClient())
+    db = db_implementation.MongoDbApi(MongoClient(), logger)
     return db
 
 
