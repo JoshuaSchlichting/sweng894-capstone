@@ -19,6 +19,8 @@ class MongoDbApi(AbstractDataAccessLayer):
     def create_user(
         self, username: str, user_type: str, password: Optional[str] = None
     ) -> str:
+        if self._db.users.count_documents({"username": username}) > 0:
+            raise Exception("User '{username}' already exists!!!")
         id = self._db.users.insert_one(
             {"username": username, "password": password, "user_type": user_type}
         ).inserted_id
