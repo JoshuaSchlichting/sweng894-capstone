@@ -21,11 +21,11 @@ jobs:
     - uses: actions/checkout@v2
     - uses: docker://ghcr.io/kciter/aws-ecr-action:3d536d166a4dc50d2a110e45eaf2d37406bb2256
       with:
-        input_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        input_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        input_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-        input_repo: personal
-        input_region: us-east-1
+        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+        repo: personal
+        region: us-east-1
         tags: latest,${{ github.sha }}
         create_repo: true
         dockerfile: vote_system/Dockerfile
