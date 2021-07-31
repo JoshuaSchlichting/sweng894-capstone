@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vote-system
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      vote_system: web
+  template:
+    metadata:
+      labels:
+        vote_system: web
+    spec:
+      containers:
+      - name: vote-system-container
+        image: cicd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vote-system-entrypoint
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    bb: web
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30000
