@@ -33,7 +33,8 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-
+    - name: Check out code
+      uses: actions/checkout@v2
 
     - run: docker build --file /home/runner/work/sweng894-capstone/vote_system/Dockerfile --tag votesystem:${{ github.sha }} .
     - name: Push to ECR
