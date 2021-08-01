@@ -55,7 +55,7 @@ jobs:
 
   deploy-to-cluster:
     - name: deploy to cluster
-      uses: kodermax/kubectl-aws-eks@master
+      uses: kodermax/kubectl-aws-eks@1b4ed089c27e92d88036f5c7dcb630f1efc125e2
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         ECR_REGISTRY: ${{ build-and-push.steps.login-ecr.outputs.registry }}
