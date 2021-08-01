@@ -83,6 +83,7 @@ jobs:
     #   with: # defaults to latest kubectl binary version
     #     config: ${{ secrets.KUBE_CONFIG_DATA }}
     #     command: set image --record deployment/${{ env.ECR_REPOSITORY }} container=${{ github.repository }}:${{ github.sha }}
+    - run: ls -al
     - name: add deployment to cluster
       uses: Jberlinsky/kubernetes-action@master
       env:
