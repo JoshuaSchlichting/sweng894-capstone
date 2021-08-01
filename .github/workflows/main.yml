@@ -71,7 +71,7 @@ jobs:
 
     - name: Install aws-iam-authenticator 
       uses: prepor/action-aws-iam-authenticator@master
-      run: aws-iam-authenticator version
+    - run: aws-iam-authenticator version
 
     - name: add deployment to cluster
       uses: steebchen/kubectl@v2.0.0
