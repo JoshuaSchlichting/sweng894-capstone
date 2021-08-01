@@ -59,8 +59,8 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - uses: prepor/action-aws-iam-authenticator@master
-    - run: aws-iam-authenticator version
+    # - uses: prepor/action-aws-iam-authenticator@master
+    # - run: aws-iam-authenticator version
 
     - name: Check out code
       uses: actions/checkout@v2
@@ -72,21 +72,34 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.REGION }}
 
+    # - name: add deployment to cluster
+    #   uses: steebchen/kubectl@v2.0.0
+    #   with: # defaults to latest kubectl binary version
+    #     config: ${{ secrets.KUBE_CONFIG_DATA }}
+    #     command: apply -f vote_system/kubernetes-deployment.yaml
+
+    # - name: deploy to cluster
+    #   uses: steebchen/kubectl@v2.0.0
+    #   with: # defaults to latest kubectl binary version
+    #     config: ${{ secrets.KUBE_CONFIG_DATA }}
+    #     command: set image --record deployment/${{ env.ECR_REPOSITORY }} container=${{ github.repository }}:${{ github.sha }}
     - name: add deployment to cluster
-      uses: steebchen/kubectl@v2.0.0
-      with: # defaults to latest kubectl binary version
-        config: ${{ secrets.KUBE_CONFIG_DATA }}
-        command: apply -f vote_system/kubernetes-deployment.yaml
+      uses: Jberlinsky/kubernetes-action@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f vote_system/kubernetes-deployment.yaml
+
 
     - name: deploy to cluster
-      uses: steebchen/kubectl@v2.0.0
-      with: # defaults to latest kubectl binary version
-        config: ${{ secrets.KUBE_CONFIG_DATA }}
-        command: set image --record deployment/${{ env.ECR_REPOSITORY }} container=${{ github.repository }}:${{ github.sha }}
-
-    - name: verify deployment
-      uses: steebchen/kubectl@v2.0.0
+      uses: Jberlinsky/kubernetes-action@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        config: ${{ secrets.KUBE_CONFIG_DATA }}
-        version: v1.21.0 # specify kubectl binary version explicitly
-        command: rollout status deployment/${{ env.ECR_REPOSITORY }}
+        args: set image --record deployment/${{ env.ECR_REPOSITORY }} container=${{ github.repository }}:${{ github.sha }}
+    # - name: verify deployment
+    #   uses: steebchen/kubectl@v2.0.0
+    #   with:
+    #     config: ${{ secrets.KUBE_CONFIG_DATA }}
+    #     version: v1.21.0 # specify kubectl binary version explicitly
+    #     command: rollout status deployment/${{ env.ECR_REPOSITORY }}
