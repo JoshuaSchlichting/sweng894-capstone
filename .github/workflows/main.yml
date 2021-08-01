@@ -56,7 +56,7 @@ jobs:
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"}
 
   deploy-to-cluster:
-
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
     # - uses: prepor/action-aws-iam-authenticator@master
