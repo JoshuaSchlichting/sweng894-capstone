@@ -54,6 +54,8 @@ jobs:
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"}
 
   deploy-to-cluster:
+    runs-on: ubuntu-latest
+    steps:
     - name: deploy to cluster
       uses: kodermax/kubectl-aws-eks@1b4ed089c27e92d88036f5c7dcb630f1efc125e2
       env:
