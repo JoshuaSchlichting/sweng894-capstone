@@ -14,7 +14,7 @@ spec:
         vote_system: web
     spec:
       containers:
-      - name: vote-system-container
+      - name: votesystem-container
         image: cicd
 ---
 apiVersion: v1
