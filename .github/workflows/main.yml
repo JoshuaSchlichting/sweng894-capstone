@@ -35,7 +35,7 @@ jobs:
 
 
 
-    - run: docker build --file ./vote_system/Dockerfile --tag votesystem:${{ github.sha }} .
+    - run: docker build --file /home/runner/work/sweng894-capstone/vote_system/Dockerfile --tag votesystem:${{ github.sha }} .
     - name: Push to ECR
       id: ecr
       uses: jwalton/gh-ecr-push@v1
