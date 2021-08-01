@@ -20,6 +20,9 @@ jobs:
   build-and-push:
 
     runs-on: ubuntu-latest
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
+
     steps:
 
 
@@ -60,7 +63,7 @@ jobs:
       uses: kodermax/kubectl-aws-eks@1b4ed089c27e92d88036f5c7dcb630f1efc125e2
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        ECR_REGISTRY: ${{ build-and-push.steps.login-ecr.outputs.registry }}
+        ECR_REGISTRY: ${{ jobs.build-and-push.outputs.registry }}
         ECR_REPOSITORY: personal
         IMAGE_TAG: ${{ github.sha }}
       with:
