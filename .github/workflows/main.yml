@@ -59,6 +59,9 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+    - uses: prepor/action-aws-iam-authenticator@master
+    - run: aws-iam-authenticator version
+
     - name: Check out code
       uses: actions/checkout@v2
 
@@ -68,10 +71,6 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.REGION }}
-
-    - name: Install aws-iam-authenticator 
-      uses: prepor/action-aws-iam-authenticator@master
-    - run: aws-iam-authenticator version
 
     - name: add deployment to cluster
       uses: steebchen/kubectl@v2.0.0
