@@ -97,7 +97,7 @@ jobs:
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image --record deployment/${{ env.ECR_REPOSITORY }} container=votesystem-container
+        args: set image --record deployment/${{ env.ECR_REPOSITORY }} votesystem-container=${{ github.repository }}:${{ github.sha }}
     # - name: verify deployment
     #   uses: steebchen/kubectl@v2.0.0
     #   with:
