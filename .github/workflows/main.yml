@@ -15,6 +15,7 @@ on:
 env:
   ECR_REPOSITORY: votesystem
   REGION: us-east-1
+  IMAGE_TAG: votesystem${{ github.sha }}
 
 jobs:
   build-and-push:
@@ -45,7 +46,7 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: votesystem${{ github.sha }}
+        IMAGE_TAG: ${{ env.IMAGE_TAG }}
       run: |
         # Build a docker container and
         # push it to ECR so that it can
@@ -97,7 +98,7 @@ jobs:
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image --record deployment/${{ env.ECR_REPOSITORY }} votesystem-container=${{ github.repository }}:${{ github.sha }}
+        args: set image --record deployment/${{ env.ECR_REPOSITORY }} votesystem-container=votesystem${{ github.sha }}
     # - name: verify deployment
     #   uses: steebchen/kubectl@v2.0.0
     #   with:
