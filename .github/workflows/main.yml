@@ -52,9 +52,9 @@ jobs:
         # push it to ECR so that it can
         # be deployed to ECS.
         cd vote_system
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"}
+        docker build -t $ECR_REGISTRY/$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$IMAGE_TAG"}
 
   deploy-to-cluster:
     needs: build-and-push
