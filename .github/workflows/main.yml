@@ -16,6 +16,7 @@ env:
   ECR_REPOSITORY: votesystem
   REGION: us-east-1
   IMAGE_TAG: votesystem:${{ github.sha }}
+  ECR_URI: ${{ secrets.ECR_URI }}
 
 jobs:
   build-and-push:
@@ -60,9 +61,6 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-    # - uses: prepor/action-aws-iam-authenticator@master
-    # - run: aws-iam-authenticator version
-
     - name: Check out code
       uses: actions/checkout@v2
 
@@ -72,28 +70,20 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.REGION }}
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
-    # - name: add deployment to cluster
-    #   uses: steebchen/kubectl@v2.0.0
-    #   with: # defaults to latest kubectl binary version
-    #     config: ${{ secrets.KUBE_CONFIG_DATA }}
-    #     command: apply -f vote_system/kubernetes-deployment.yaml
 
-    # - name: deploy to cluster
-    #   uses: steebchen/kubectl@v2.0.0
-    #   with: # defaults to latest kubectl binary version
-    #     config: ${{ secrets.KUBE_CONFIG_DATA }}
-    #     command: set image --record deployment/${{ env.ECR_REPOSITORY }} container=${{ github.repository }}:${{ github.sha }}
-    - run: ls -al
+    # inject image name into yaml
+    - run: sed -i 's/$IMAGENAME$/${{ env.ECR_URI }}${{ env.IMAGE_TAG }}/g' /github/workspace/vote_system/kubernetes_deployment.yaml 
+
     - name: add deployment to cluster
       uses: Jberlinsky/kubernetes-action@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: apply -f vote_system/kubernetes_deployment.yaml
-
+        args: apply -f /github/workspace/vote_system/kubernetes_deployment.yaml 
 
     - name: deploy to cluster
       uses: Jberlinsky/kubernetes-action@master
