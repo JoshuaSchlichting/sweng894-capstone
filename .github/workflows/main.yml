@@ -76,7 +76,12 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
 
     # inject image name into yaml
-    - run: sed -i 's/$IMAGENAME$/${{ env.ECR_URI }}${{ env.IMAGE_TAG }}/g' /github/workspace/vote_system/kubernetes_deployment.yaml 
+    - name: replace image name in k8s yaml
+      uses: jacobtomlinson/gha-find-replace@master
+      with:
+        find: $IMAGENAME$
+        replace: ${{ env.ECR_URI }}${{ env.IMAGE_TAG }}
+        include: vote_system/kubernetes_deployment.yaml 
 
     - name: add deployment to cluster
       uses: Jberlinsky/kubernetes-action@master
