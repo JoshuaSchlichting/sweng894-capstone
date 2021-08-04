@@ -37,6 +37,7 @@ jobs:
 
     - name: Run tests
       run: |
+        ls -al
         source vote_system/.venv/bin/activate
         cd ./vote_system
         pytest --cov=app/ tests
