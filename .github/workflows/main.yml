@@ -76,7 +76,7 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
 
     # inject image name into yaml
-    - run: sed 's+\$IMAGENAME\$+${{ env.IMAGE_TAG }}+g' ./vote_system/kubernetes_deployment.yaml
+    - run: sed -i 's+\$IMAGENAME\$+${{ env.IMAGE_TAG }}+g' ./vote_system/kubernetes_deployment.yaml
 
     - name: add deployment to cluster
       uses: Jberlinsky/kubernetes-action@master
