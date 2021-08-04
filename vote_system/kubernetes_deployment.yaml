@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: votesystem-container
-        image: IMAGENAME
+        image: $IMAGENAME$
         ports:
         - containerPort: 443
         - containerPort: 80
