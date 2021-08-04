@@ -8,5 +8,40 @@ ___
 # ✔️ Sortofair Voting System 🗳️
 #### An instant-runoff voting system designed to give voters a web based voting experience without the lopsidedness of two party rule.
 
-## CI/CD High level diagram
-![CICD Diagram](./docs/architecture/sweng894-CICD.png)
+<!-- ## CI/CD High level diagram -->
+<!-- ![CICD Diagram](./docs/architecture/sweng894-CICD.png) -->
+
+
+## Instructions
+Create the EKS Kubernetes cluster
+```
+eksctl create cluster \
+  --name fargate-eks \
+  --region us-east-1 \
+  --zones=us-east-1a,us-east-1b,us-east-1d \
+  --instance-types=t2.nano \
+  --fargate
+  # optional to view yaml output
+  # --dry-run 
+```
+
+Now we need to update the kubectl config stored in github secrets
+```
+gh secret set KUBE_CONFIG_DATA -b $(cat ~/.kube/config | base64)
+```
+
+Now we need to add the pipeline user's ARN to the cluster as an admin
+```
+eksctl create iamidentitymapping \
+    --cluster fargate-eks  \
+    --arn {{ secrets.PIPELINE_USER_ARN }} \
+    --group system:masters \
+    --username cicd-runner
+```
+
+Now the pipeline can be run for deployment.
+
+to shutdown the cluster ($$$$), execute the following:
+```
+eksctl delete cluster --name fargate-eks
+```
