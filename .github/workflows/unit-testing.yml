@@ -1,0 +1,42 @@
+name: Execute Unit Test Suite
+
+# Triggers the workflow on push or pull request events for all branches
+on: [push, pull_request]
+
+jobs:
+  execute-unit-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Set up python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.10
+        
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: vote_system/.venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: |
+        cd ./vote_system
+        poetry install --no-interaction --no-root
+
+    - name: Run tests
+      run: |
+        source vote_system/.venv/bin/activate
+        cd ./vote_system
+        pytest --cov=app/ tests

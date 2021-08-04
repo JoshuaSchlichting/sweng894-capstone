@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CICD Deployment
 
 # Controls when the workflow will run
@@ -13,19 +11,122 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  ECR_REPOSITORY: votesystem
+  REGION: us-east-1
+  IMAGE_TAG: votesystem:${{ github.sha }}
+  ECR_URI: ${{ secrets.ECR_URI }}
 
 jobs:
+  execute-unit-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Set up python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.10
+        
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: vote_system/.venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: |
+        cd ./vote_system
+        poetry install --no-interaction --no-root
+
+    - name: Run tests
+      run: |
+        source vote_system/.venv/bin/activate
+        cd ./vote_system
+        pytest --cov=app/ tests
+ 
+
   build-and-push:
+
+    needs: execute-unit-tests
+    runs-on: ubuntu-latest
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
+
+    steps:
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.REGION }}
+   
+        
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ env.IMAGE_TAG }}
+      run: |
+        # Build a docker container and
+        # push it to ECR so that it can
+        # be deployed to ECS.
+        cd vote_system
+        docker build -t $ECR_REGISTRY/$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$IMAGE_TAG"}
+
+  deploy-to-cluster:
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: docker://ghcr.io/kciter/aws-ecr-action:v4
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-        repo: personal
-        region: us-east-1
-        tags: latest,${{ github.sha }}
-        create_repo: true
-        dockerfile: vote_system/Dockerfile
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    # inject image name into yaml
+    - run: sed -i 's+\$IMAGENAME\$+${{ env.ECR_URI }}${{ env.IMAGE_TAG }}+g' ./vote_system/kubernetes_deployment.yaml
+
+    - name: add deployment to cluster
+      uses: Jberlinsky/kubernetes-action@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f /github/workspace/vote_system/kubernetes_deployment.yaml
+
+    - name: verify deployment
+      uses: Jberlinsky/kubernetes-action@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: rollout status deployment/${{ env.ECR_REPOSITORY }}
+
