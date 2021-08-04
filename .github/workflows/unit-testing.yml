@@ -31,12 +31,12 @@ jobs:
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: |
-        ls -al
         cd ./vote_system
         poetry install --no-interaction --no-root
     - name: Run tests
       run: |
-        source .venv/bin/activate
+        # source .venv/bin/activate
+        poetry shell
         cd votesystem
         pytest -k unit tests/
         coverage report 
