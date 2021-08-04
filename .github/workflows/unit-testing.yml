@@ -28,15 +28,16 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: |
         cd ./vote_system
         poetry install --no-interaction --no-root
+
     - name: Run tests
       run: |
-        ls -al
-        source .venv/bin/activate
+        source vote_system/.venv/bin/activate
         cd ./vote_system
         pytest -k unit tests/
         coverage report 
