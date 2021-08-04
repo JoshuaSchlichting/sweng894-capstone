@@ -50,46 +50,46 @@ jobs:
           pytest tests/
           coverage report 
 
-  # build-and-push:
+  build-and-push:
 
-  #   needs: execute-unit-tests
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     registry: ${{ steps.login-ecr.outputs.registry }}
+    needs: execute-unit-tests
+    runs-on: ubuntu-latest
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
 
-  #   steps:
+    steps:
 
-  #   - name: Configure AWS credentials
-  #     uses: aws-actions/configure-aws-credentials@v1
-  #     with:
-  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #       aws-region: ${{ env.REGION }}
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.REGION }}
    
         
 
-  #   - name: Login to Amazon ECR
-  #     id: login-ecr
-  #     uses: aws-actions/amazon-ecr-login@v1
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-  #   - name: Check out code
-  #     uses: actions/checkout@v2
+    - name: Check out code
+      uses: actions/checkout@v2
 
-  #   - name: Build, tag, and push image to Amazon ECR
-  #     id: build-image
-  #     env:
-  #       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-  #       IMAGE_TAG: ${{ env.IMAGE_TAG }}
-  #     run: |
-  #       # Build a docker container and
-  #       # push it to ECR so that it can
-  #       # be deployed to ECS.
-  #       cd vote_system
-  #       docker build -t $ECR_REGISTRY/$IMAGE_TAG .
-  #       docker push $ECR_REGISTRY/$IMAGE_TAG
-  #       echo "::set-output name=image::$ECR_REGISTRY/$IMAGE_TAG"}
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ env.IMAGE_TAG }}
+      run: |
+        # Build a docker container and
+        # push it to ECR so that it can
+        # be deployed to ECS.
+        cd vote_system
+        docker build -t $ECR_REGISTRY/$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$IMAGE_TAG"}
 
-  # deploy-to-cluster:
+  deploy-to-cluster:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
