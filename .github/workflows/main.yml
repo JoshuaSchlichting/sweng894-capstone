@@ -79,7 +79,7 @@ jobs:
     - name: replace image name in k8s yaml
       uses: jacobtomlinson/gha-find-replace@master
       with:
-        find: $IMAGENAME$
+        find: IMAGENAME
         replace: ${{ env.IMAGE_TAG }}
         include: /github/workspace/vote_system/kubernetes_deployment.yaml 
 
