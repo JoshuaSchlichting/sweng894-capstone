@@ -80,7 +80,7 @@ jobs:
       uses: jacobtomlinson/gha-find-replace@master
       with:
         find: $IMAGENAME$
-        replace: ${{ env.ECR_URI }}${{ env.IMAGE_TAG }}
+        replace: ${{ env.ECR_URI }}/${{ env.IMAGE_TAG }}
         include: /github/workspace/vote_system/kubernetes_deployment.yaml 
 
     - name: add deployment to cluster
@@ -89,14 +89,6 @@ jobs:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
         args: apply -f /github/workspace/vote_system/kubernetes_deployment.yaml 
-
-    # - name: deploy to cluster
-    #   uses: Jberlinsky/kubernetes-action@master
-    #   env:
-    #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-    #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-    #   with:
-    #     args: set image --record deployment/${{ env.ECR_REPOSITORY }} votesystem-container=$ECR_REGISTRY/${{ env.IMAGE_TAG }}
 
     - name: verify deployment
       uses: Jberlinsky/kubernetes-action@master
