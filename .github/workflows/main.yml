@@ -81,6 +81,7 @@ jobs:
       with:
         find: $IMAGENAME$
         replace: ${{ env.IMAGE_TAG }}
+        include: "kubernetes_deployment.yaml"
 
     - name: add deployment to cluster
       uses: Jberlinsky/kubernetes-action@master
@@ -88,7 +89,6 @@ jobs:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
         args: apply -f /github/workspace/vote_system/kubernetes_deployment.yaml
-        include: "kubernetes_deployment.yaml"
 
     - name: verify deployment
       uses: Jberlinsky/kubernetes-action@master
