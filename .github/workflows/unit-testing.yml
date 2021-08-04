@@ -39,5 +39,5 @@ jobs:
       run: |
         source vote_system/.venv/bin/activate
         cd ./vote_system
-        pytest -k unit tests/
+        pytest tests/unit/
         coverage report 
