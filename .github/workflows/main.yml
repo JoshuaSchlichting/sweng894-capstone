@@ -20,7 +20,10 @@ env:
 
 jobs:
   execute-unit-tests:
+
     runs-on: ubuntu-latest
+
+    steps:
     - name: Check out repository
       uses: actions/checkout@v2
 
@@ -40,15 +43,19 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: |
+        cd ./vote_system
+        poetry install --no-interaction --no-root
+
     - name: Run tests
       run: |
-        source .venv/bin/activate
-        cd votesystem
-        pytest tests/
-        coverage report 
+        source vote_system/.venv/bin/activate
+        cd ./vote_system
+        pytest --cov=app/ tests
+ 
 
   build-and-push:
 
