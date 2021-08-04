@@ -31,7 +31,8 @@ jobs:
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: |
-        cd votesystem/ 
+        ls -al
+        cd ./votesystem/ 
         poetry install --no-interaction --no-root
     - name: Run tests
       run: |
