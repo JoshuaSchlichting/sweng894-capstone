@@ -35,8 +35,7 @@ jobs:
         poetry install --no-interaction --no-root
     - name: Run tests
       run: |
-        # source .venv/bin/activate
-        poetry shell
         cd votesystem
+        poetry shell
         pytest -k unit tests/
         coverage report 
