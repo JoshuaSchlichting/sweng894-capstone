@@ -1,6 +1,6 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![CICD Deployment](https://github.com/JoshuaSchlichting/sweng894-capstone/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/JoshuaSchlichting/sweng894-capstone/actions/workflows/main.yml)
-
+[![Unit Test Suite](https://github.com/JoshuaSchlichting/sweng894-capstone/actions/workflows/unit-testing.yml/badge.svg)](https://github.com/JoshuaSchlichting/sweng894-capstone/actions/workflows/unit-testing.yml)
 Penn State University SWENG 894 Capstone Experience
 
 Author/maintainer: Joshua Schlichting
