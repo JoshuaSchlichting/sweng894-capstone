@@ -35,7 +35,7 @@ jobs:
         poetry install --no-interaction --no-root
     - name: Run tests
       run: |
-        cd votesystem
+        cd ./vote_system
         poetry shell
         pytest -k unit tests/
         coverage report 
