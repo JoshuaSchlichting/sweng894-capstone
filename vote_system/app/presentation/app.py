@@ -36,7 +36,7 @@ def _get_data_access_layer() -> AbstractDataAccessLayer:
     credentials_file = os.path.join(cred_file_dir, "db_credentials")
     with open(credentials_file) as creds_file:
         conn_str = creds_file.read()
-    db = db_implementation.MongoClient(host=conn_str)
+    db = db_implementation.MongoDbApi(mongo_client=MongoClient(host=conn_str), logger=logger)
     return db
 
 
