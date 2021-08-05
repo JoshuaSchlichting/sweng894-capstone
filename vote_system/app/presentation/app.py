@@ -1,3 +1,5 @@
+from collections import namedtuple
+from datetime import date
 from flask import Flask, request, jsonify, make_response
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -14,7 +16,8 @@ from core import AbstractDataAccessLayer, UserFactory
 
 
 app = Flask(__name__, static_url_path="/static")
-SECRET_KEY = "change this for production"
+with open("../../secret_key") as key_file:
+    SECRET_KEY = key_file.read()
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
 jwt = JWTManager(app)
@@ -26,7 +29,9 @@ from . import (
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     import db_implementation
 
-    db = db_implementation.MongoDbApi(MongoClient(), logger)
+    with open("../../db_credentials") as creds_file:
+        conn_str = creds_file.read()
+    db = db_implementation.MongoClient(host=conn_str)
     return db
 
 
@@ -71,14 +76,14 @@ def create_user():
         username=request.json["username"],
         password=request.json.get("password"),
         user_type=request.json["userType"],
-        is_candidate=request.json.get("isCandidate")
+        is_candidate=request.json.get("isCandidate"),
     )
     user_info = _get_data_access_layer().get_user_info_by_id(newly_create_user_id)
     return jsonify(
         {
             "userId": newly_create_user_id,
             "username": user_info["username"],
-            "userType": user_info["user_type"]
+            "userType": user_info["user_type"],
         }
     )
 
@@ -125,12 +130,14 @@ def add_candidate_to_election():
         )
     )
 
+
 @app.route("/election/candidate", methods=["GET"])
 def get_candidates_by_election():
     basic_api = _get_api_factory(None).create_basic_api()
     return jsonify(
         basic_api.get_candidates_by_election(election_id=request.args.get("electionId"))
     )
+
 
 @app.route("/vote", methods=["POST"])
 @jwt_required()
@@ -155,7 +162,7 @@ def create_candidate():
 @app.route("/candidate/all", methods=["GET"])
 def get_all_candidates():
     basic_api = _get_api_factory(None).create_basic_api()
-    
+
     candidates = basic_api.get_all_candidates()
 
     return jsonify({"candidates": candidates})
