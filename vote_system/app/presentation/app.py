@@ -19,6 +19,7 @@ app = Flask(__name__, static_url_path="/static")
 cred_file_dir = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+logger.debug(f"cred_file_dir = '{cred_file_dir}'")
 with open(os.path.join(cred_file_dir, "secret_key")) as key_file:
     SECRET_KEY = key_file.read()
 app.config["SECRET_KEY"] = SECRET_KEY
@@ -170,3 +171,5 @@ def get_all_candidates():
     candidates = basic_api.get_all_candidates()
 
     return jsonify({"candidates": candidates})
+if __name__ == "__main__":
+    print(cred_file_dir)
