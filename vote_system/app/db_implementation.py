@@ -18,12 +18,22 @@ class MongoDbApi(AbstractDataAccessLayer):
         self._log = logger
 
     def create_user(
-        self, *, username: str, user_type: str, is_candidate: bool, password: Optional[str] = None
+        self,
+        *,
+        username: str,
+        user_type: str,
+        is_candidate: bool,
+        password: Optional[str] = None,
     ) -> str:
         if self._db.users.count_documents({"username": username}) > 0:
             raise Exception(f"User '{username}' already exists!!!")
         id = self._db.users.insert_one(
-            {"username": username, "password": password, "user_type": user_type, "isCandidate": is_candidate}
+            {
+                "username": username,
+                "password": password,
+                "user_type": user_type,
+                "isCandidate": is_candidate,
+            }
         ).inserted_id
         return str(id)
 
@@ -54,13 +64,15 @@ class MongoDbApi(AbstractDataAccessLayer):
         self, election_name: str, start_date: datetime, end_date: datetime
     ) -> int:
         if self._db.elections.find_one({"election_name": election_name}):
-            raise Exception(f"Election named '{election_name}' cannot be created because it already exists!!!")
+            raise Exception(
+                f"Election named '{election_name}' cannot be created because it already exists!!!"
+            )
         id = self._db.elections.insert_one(
             {
                 "election_name": election_name,
                 "start_date": start_date,
                 "end_date": end_date,
-                "candidates": []
+                "candidates": [],
             }
         ).inserted_id
         return str(id)
@@ -116,20 +128,27 @@ class MongoDbApi(AbstractDataAccessLayer):
         return True if user_info else False
 
     def get_all_candidates(self) -> list:
-        candidates = list(self._db.users.find({"isCandidate": True}, {"_id": 1, "username": 1}))
+        candidates = list(
+            self._db.users.find({"isCandidate": True}, {"_id": 1, "username": 1})
+        )
         for candidate in candidates:
             self._replace_id_with_str(candidate)
         return candidates
 
     def get_candidates_by_election(self, election_id: str) -> List[dict]:
         if election_id is None:
-            self._log.warning(f"A call for get_candidates_by_election() passed a null value as the election id!")
+            self._log.warning(
+                f"A call for get_candidates_by_election() passed a null value as the election id!"
+            )
             return
-        candidate_id_list  = self._db.elections.find_one({"_id": ObjectId(election_id), "candidates": {"$exists": True}}, {"candidates": 1})["candidates"]
+        candidate_id_list = self._db.elections.find_one(
+            {"_id": ObjectId(election_id), "candidates": {"$exists": True}},
+            {"candidates": 1},
+        )["candidates"]
         candidates = list(
             self._db.users.find(
                 {"_id": {"$in": [ObjectId(x) for x in candidate_id_list]}},
-                {"_id": 1, "username": 1}
+                {"_id": 1, "username": 1},
             )
         )
         for candidate in candidates:
