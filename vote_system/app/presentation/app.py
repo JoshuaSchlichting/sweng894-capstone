@@ -16,7 +16,9 @@ from core import AbstractDataAccessLayer, UserFactory
 
 
 app = Flask(__name__, static_url_path="/static")
-cred_file_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+cred_file_dir = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 with open(os.path.join(cred_file_dir, "secret_key")) as key_file:
     SECRET_KEY = key_file.read()
 app.config["SECRET_KEY"] = SECRET_KEY
@@ -29,6 +31,7 @@ from . import (
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     import db_implementation
+
     credentials_file = os.path.join(cred_file_dir, "db_credentials")
     with open(credentials_file) as creds_file:
         conn_str = creds_file.read()
