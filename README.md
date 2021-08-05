@@ -14,7 +14,8 @@ ___
 <!-- ![CICD Diagram](./docs/architecture/sweng894-CICD.png) -->
 
 
-## Instructions
+# Instructions
+## k8s
 Create the EKS Kubernetes cluster
 ```
 eksctl create cluster \
@@ -46,4 +47,9 @@ Now the pipeline can be run for deployment.
 to shutdown the cluster ($$$$), execute the following:
 ```
 eksctl delete cluster --name fargate-eks
+```
+
+## Prep MongoDB Atlas
+```
+mongosh "mongodb+srv://cluster0.knkim.mongodb.net/vote_system" --username admin
 ```
