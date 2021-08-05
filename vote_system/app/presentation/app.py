@@ -1,5 +1,5 @@
-from collections import namedtuple
-from datetime import date
+import os
+
 from flask import Flask, request, jsonify, make_response
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -16,7 +16,8 @@ from core import AbstractDataAccessLayer, UserFactory
 
 
 app = Flask(__name__, static_url_path="/static")
-with open("../../secret_key") as key_file:
+cred_file_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+with open(os.path.join(cred_file_dir, "secret_key")) as key_file:
     SECRET_KEY = key_file.read()
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
@@ -28,8 +29,8 @@ from . import (
 
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     import db_implementation
-
-    with open("../../db_credentials") as creds_file:
+    credentials_file = os.path.join(cred_file_dir, "db_credentials")
+    with open(credentials_file) as creds_file:
         conn_str = creds_file.read()
     db = db_implementation.MongoClient(host=conn_str)
     return db
