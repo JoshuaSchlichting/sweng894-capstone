@@ -20,15 +20,13 @@ def client():
 @pytest.fixture
 def data_access_layer():
     from mongomock import MongoClient
+
     # from pymongo import MongoClient
     import db_implementation
 
     db = db_implementation.MongoDbApi(MongoClient(), logger=logger)
     db.create_user(
-        username="test",
-        password="test",
-        is_candidate=False,
-        user_type="admin"
+        username="test", password="test", is_candidate=False, user_type="admin"
     )
     return db
 
@@ -42,6 +40,7 @@ def token(client):
         raise Exception(f"STATUS CODE {response.status_code}")
     token = response.json["access_token"]
     return token
+
 
 @pytest.fixture(autouse=True)
 def patch_data_access_layer(monkeypatch, mocker, data_access_layer):
@@ -83,9 +82,13 @@ def test_create_election(client, token):
 
 
 def test_add_candidate_to_election(
-    client, token, data_access_layer,
+    client,
+    token,
+    data_access_layer,
 ):
-    election_id = data_access_layer.create_election("city council 2021", "2021-01-01", "2021-02-01")
+    election_id = data_access_layer.create_election(
+        "city council 2021", "2021-01-01", "2021-02-01"
+    )
 
     response = client.post(
         "election/candidate",

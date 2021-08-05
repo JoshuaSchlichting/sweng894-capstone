@@ -3,15 +3,20 @@ from loguru import logger
 
 from presentation.app import app
 
+
 @pytest.fixture
 def data_access_layer():
     from mongomock import MongoClient
+
     # from pymongo import MongoClient
     import db_implementation
 
     db = db_implementation.MongoDbApi(MongoClient(), logger=logger)
-    db.create_user(username="test", password="test", user_type="admin", is_candidate=True)
+    db.create_user(
+        username="test", password="test", user_type="admin", is_candidate=True
+    )
     return db
+
 
 @pytest.fixture
 def client():

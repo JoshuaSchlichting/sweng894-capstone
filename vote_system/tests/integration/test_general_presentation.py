@@ -7,11 +7,14 @@ from presentation.app import app
 @pytest.fixture
 def data_access_layer():
     from mongomock import MongoClient
+
     # from pymongo import MongoClient
     import db_implementation
 
     db = db_implementation.MongoDbApi(MongoClient(), logger=logger)
-    db.create_user(username="test", password="test", is_candidate=True, user_type="admin")
+    db.create_user(
+        username="test", password="test", is_candidate=True, user_type="admin"
+    )
     return db
 
 
