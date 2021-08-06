@@ -51,6 +51,12 @@ class MongoDbApi(AbstractDataAccessLayer):
     def get_vote(self, id: int) -> dict:
         return self._db.votes.find_one({}, {"_id": id})
 
+    def get_all_votes(self) -> List[dict]:
+        votes = list(self._db.votes.find({}))
+        for vote in votes:
+            self._replace_id_with_str(vote)
+        return votes
+
     def create_candidate(self, username: str) -> str:
         id = self._db.users.find_one_and_update(
             filter={"username": username},

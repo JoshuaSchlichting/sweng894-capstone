@@ -47,6 +47,12 @@ class AbstractDataAccessLayer(ABC):
         """
 
     @abstractmethod
+    def get_all_votes(self) -> List[dict]:
+        """
+        Returns a list of all vote objects
+        """
+
+    @abstractmethod
     def create_candidate(self, username: str) -> int:
         """Creates a candidate in the system
 
