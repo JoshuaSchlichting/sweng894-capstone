@@ -123,6 +123,12 @@ def get_election():
     basic_api = _get_api_factory(None).create_basic_api()
     return jsonify(basic_api.get_election(request.json["electionId"]))
 
+@app.route("/election/report", methods=["GET"])
+def get_election_report():
+    logger.debug(f"request.args: {request.args}")
+    logger.debug(f"Getting election report for {request.args.get('electionId')}")
+    basic_api = _get_api_factory(None).create_basic_api()
+    return jsonify({"data": str(basic_api.get_election_report(request.args.get("electionId")))})
 
 @app.route("/election/candidate", methods=["POST"])
 @jwt_required()
