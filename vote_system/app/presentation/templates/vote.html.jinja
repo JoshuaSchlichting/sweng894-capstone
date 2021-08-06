@@ -6,6 +6,8 @@
   <div id="candidateTable"></div>
 
   <button id="submitVoteBtn" class="btn btn-primary">Submit vote</button>
+
+  <div id="electionReport"></div>
 {% endblock %}
 
 
@@ -36,6 +38,16 @@
             maxHeight:"40%",
             movableRows: true
           });
+        }
+      });
+    });
+
+    $().ready(function(){
+      $.get({
+        url: "/election/report",
+        data: {"electionId": electionId},
+        success: function(data){
+          document.getElementById("electionReport").innerText = data.data;
         }
       });
     });

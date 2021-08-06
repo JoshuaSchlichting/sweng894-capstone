@@ -31,7 +31,7 @@ def test_create_user(api):
         username="Test User",
         user_type="standard",
         is_candidate=True,
-        password="test password"
+        password="test password",
     )
 
     # assert

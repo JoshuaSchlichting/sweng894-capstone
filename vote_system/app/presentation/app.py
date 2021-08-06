@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request, jsonify, make_response
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -14,7 +16,12 @@ from core import AbstractDataAccessLayer, UserFactory
 
 
 app = Flask(__name__, static_url_path="/static")
-SECRET_KEY = "change this for production"
+cred_file_dir = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
+logger.debug(f"cred_file_dir = '{cred_file_dir}'")
+with open(os.path.join(cred_file_dir, "secret_key")) as key_file:
+    SECRET_KEY = key_file.read()
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
 jwt = JWTManager(app)
@@ -26,7 +33,10 @@ from . import (
 def _get_data_access_layer() -> AbstractDataAccessLayer:
     import db_implementation
 
-    db = db_implementation.MongoDbApi(MongoClient(), logger)
+    credentials_file = os.path.join(cred_file_dir, "db_credentials")
+    with open(credentials_file) as creds_file:
+        conn_str = creds_file.read()
+    db = db_implementation.MongoDbApi(mongo_client=MongoClient(host=conn_str), logger=logger)
     return db
 
 
@@ -71,14 +81,14 @@ def create_user():
         username=request.json["username"],
         password=request.json.get("password"),
         user_type=request.json["userType"],
-        is_candidate=request.json.get("isCandidate")
+        is_candidate=request.json.get("isCandidate"),
     )
     user_info = _get_data_access_layer().get_user_info_by_id(newly_create_user_id)
     return jsonify(
         {
             "userId": newly_create_user_id,
             "username": user_info["username"],
-            "userType": user_info["user_type"]
+            "userType": user_info["user_type"],
         }
     )
 
@@ -113,6 +123,12 @@ def get_election():
     basic_api = _get_api_factory(None).create_basic_api()
     return jsonify(basic_api.get_election(request.json["electionId"]))
 
+@app.route("/election/report", methods=["GET"])
+def get_election_report():
+    logger.debug(f"request.args: {request.args}")
+    logger.debug(f"Getting election report for {request.args.get('electionId')}")
+    basic_api = _get_api_factory(None).create_basic_api()
+    return jsonify({"data": str(basic_api.get_election_report(request.args.get("electionId")))})
 
 @app.route("/election/candidate", methods=["POST"])
 @jwt_required()
@@ -125,12 +141,14 @@ def add_candidate_to_election():
         )
     )
 
+
 @app.route("/election/candidate", methods=["GET"])
 def get_candidates_by_election():
     basic_api = _get_api_factory(None).create_basic_api()
     return jsonify(
         basic_api.get_candidates_by_election(election_id=request.args.get("electionId"))
     )
+
 
 @app.route("/vote", methods=["POST"])
 @jwt_required()
@@ -155,7 +173,9 @@ def create_candidate():
 @app.route("/candidate/all", methods=["GET"])
 def get_all_candidates():
     basic_api = _get_api_factory(None).create_basic_api()
-    
+
     candidates = basic_api.get_all_candidates()
 
     return jsonify({"candidates": candidates})
+if __name__ == "__main__":
+    print(cred_file_dir)

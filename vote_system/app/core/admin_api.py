@@ -6,11 +6,18 @@ from .base_api import BaseApi
 
 class AdminApi(BaseApi):
     def create_user(
-        self, username: str, user_type: str, password: Optional[str], is_candidate: bool = None
+        self,
+        username: str,
+        user_type: str,
+        password: Optional[str],
+        is_candidate: bool = None,
     ) -> int:
         """Create new user and return new user's ID"""
         return self._dal.create_user(
-            username=username, password=password, user_type=user_type, is_candidate=is_candidate
+            username=username,
+            password=password,
+            user_type=user_type,
+            is_candidate=is_candidate,
         )
 
     def create_candidate(self, username: str) -> int:

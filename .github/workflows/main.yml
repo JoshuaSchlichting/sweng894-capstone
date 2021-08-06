@@ -81,6 +81,14 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
 
+    - name: Inject db credentials
+      run: |
+        sed -i 's+\$DB_USER\$+${{ secrets.MONGO_USER }}+g' ./vote_system/db_credentials
+        sed -i 's+\$DB_PASSWORD\$+${{ secrets.MONGO_PW }}+g' ./vote_system/db_credentials
+
+    - name: Inject secret key
+      run: sed -i 's+\$SECRET_KEY\$+${{ secrets.SECRET_KEY }}+g' ./vote_system/secret_key
+
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:

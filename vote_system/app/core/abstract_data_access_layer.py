@@ -5,7 +5,14 @@ from typing import List, Optional
 
 class AbstractDataAccessLayer(ABC):
     @abstractmethod
-    def create_user(self, *, username: str, user_type: str, is_candidate: bool, password: Optional[str] = None) -> int:
+    def create_user(
+        self,
+        *,
+        username: str,
+        user_type: str,
+        is_candidate: bool,
+        password: Optional[str] = None
+    ) -> int:
         """Creates new user
         Args:
             username: name of user to create
@@ -37,6 +44,12 @@ class AbstractDataAccessLayer(ABC):
 
         Returns:
             dict with data from collection
+        """
+
+    @abstractmethod
+    def get_all_votes(self) -> List[dict]:
+        """
+        Returns a list of all vote objects
         """
 
     @abstractmethod

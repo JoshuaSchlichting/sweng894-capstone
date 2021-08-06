@@ -15,6 +15,7 @@ COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false \
     && poetry install --no-dev
 
-
+COPY db_credentials /.
+COPY secret_key /.
 COPY ./app /app
 CMD [ "python", "main.py"]
